@@ -1,0 +1,31 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://git.corezoid.com/go-pkgs/sentry/meta.go#ConfigSchema",
+	"description": "Sentry is a tool for tracking errors (https://sentry.io/welcome/).",
+	"oneOf": [
+		{
+			"type": "object",
+			"required": ["dsn", "levels"],
+			"properties": {
+				"enabled": { "type": "boolean", "enum": [true], "default": true },
+				"dsn": { "type":  "string", "minLength": 1, "maxLength": 10000},
+				"debug": { "type":  "boolean", "default": true },
+				"attach_stacktrace": { "type":  "boolean", "default": true },
+				"environment": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "dev" },
+				"levels": { 
+					"type": "array",
+					"default": ["panic", "fatal", "error", "error"],
+					"minItems": 1,
+					"items": { "type": "string", "enum": ["panic", "fatal", "error", "warning"] }
+				}
+			}
+		},
+		{
+			"type": "object",
+			"cz:default": true,
+			"properties": {
+				"enabled": { "type": "boolean", "enum": [false], "default": false }
+			}
+		}
+	]
+}

@@ -1,0 +1,156 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://corezoid.com/schema/gitcall/internal/app/gitcall/Config.json",
+	"type": "object",
+	"required": [
+		"db", 
+		"amqp", 
+		"servicespimp", 
+		"dundergitcall", 
+		"statuscleaner",
+		"status_update_exchange",
+		"servicestopper"
+	],
+	"properties": {
+		"sentry": { "$ref": "https://git.corezoid.com/go-pkgs/sentry/meta.go#ConfigSchema" },
+		"prometheus": { "$ref": "https://git.corezoid.com/go-pkgs/promapp/meta.go#ConfigSchema" },
+		"db": { 
+			"type": "object",
+			"required": [ "dsn" ],
+			"description": "",
+			"properties": {
+				"dsn": { 
+					"type": "string", 
+					"minLength": 1, 
+					"maxLength": 10000, 
+					"default": "postgres://${GITCALL_POSTGRESQL_USERNAME}:${GITCALL_POSTGRESQL_PASSWORD}@${GITCALL_POSTGRESQL_HOST}:${GITCALL_POSTGRESQL_PORT}/gitcall?sslmode=disable&binary_parameters=yes"
+				}
+			}
+		},
+		"amqp": {
+			"allOf": [
+				{
+					"type": "object",
+					"required": ["connections"],
+					"properties": {
+						"connections": {
+							"type": "array",
+							"default": [
+								{
+									"host": "${GITCALL_RABBITMQ_HOST}",
+									"port": "${int:GITCALL_RABBITMQ_PORT}",
+									"username": "${GITCALL_RABBITMQ_USERNAME}",
+									"password": "${GITCALL_RABBITMQ_PASSWORD}",
+									"vhost": "${GITCALL_RABBITMQ_VHOST}"
+								}
+							],
+							"items": {
+								"$ref": "https://corezoid.com/schema/gitcall/internal/pkg/amqpfactory/Config.json"
+							},
+							"minItems": 1,
+  							"maxItems": 100
+						}
+					}
+				},
+				{
+					"type": "object",
+					"required": ["buildservice_consumer"],
+					"properties": {
+						"buildservice_consumer": { "$ref": "https://corezoid.com/schema/gitcall/app/gitcall/dundergitcall/consumer/buildservice/Config.json" }
+					}
+				},
+				{
+					"type": "object",
+					"required": ["buildarchive_consumer"],
+					"properties": {
+						"buildarchive_consumer": { "$ref": "https://corezoid.com/schema/gitcall/app/gitcall/dundergitcall/consumer/buildarchive/Config.json" }
+					}
+				},
+				{
+					"type": "object",
+					"required": ["runservice_consumer"],
+					"properties": {
+						"runservice_consumer": { "$ref": "https://corezoid.com/schema/gitcall/app/gitcall/dundergitcall/consumer/runservice/Config.json" }
+					}
+				},
+				{
+					"type": "object",
+					"required": ["deployservice_consumer"],
+					"properties": {
+						"deployservice_consumer": { "$ref": "https://corezoid.com/schema/gitcall/app/gitcall/dundergitcall/consumer/deployservice/Config.json" }
+					}
+				},
+				{
+					"type": "object",
+					"required": ["getservice_consumer"],
+					"properties": {
+						"getservice_consumer": { "$ref": "https://corezoid.com/schema/gitcall/app/gitcall/dundergitcall/consumer/getservice/Config.json" }
+					}
+				},
+				{
+					"type": "object",
+					"required": ["removeservice_consumer"],
+					"properties": {
+						"removeservice_consumer": { "$ref": "https://corezoid.com/schema/gitcall/app/gitcall/dundergitcall/consumer/removeservice/Config.json" }
+					}
+				},
+				{
+					"type": "object",
+					"required": ["stopservice_consumer"],
+					"properties": {
+						"stopservice_consumer": { "$ref": "https://corezoid.com/schema/gitcall/app/gitcall/consumer/stopservice/Config.json" }
+					}
+				},
+				{
+					"type": "object",
+					"required": ["validateservice_consumer"],
+					"properties": {
+						"validateservice_consumer": { "$ref": "https://corezoid.com/schema/gitcall/app/gitcall/dundergitcall/consumer/validateservice/Config.json" }
+					}
+				},
+				{
+					"type": "object",
+					"required": ["saveservice_consumer"],
+					"properties": {
+						"saveservice_consumer": { "$ref": "https://corezoid.com/schema/gitcall/app/gitcall/dundergitcall/consumer/saveservice/Config.json" }
+					}
+				},
+				{
+					"type": "object",
+					"required": ["statusupdate_consumer"],
+					"properties": {
+						"statusupdate_consumer": { "$ref": "https://corezoid.com/schema/gitcall/app/gitcall/dundergitcall/consumer/statusupdate/Config.json" }
+					}
+				},
+				{
+					"type": "object",
+					"required": ["getpolicy_consumer"],
+					"properties": {
+						"getpolicy_consumer": { "$ref": "https://corezoid.com/schema/gitcall/app/gitcall/dundergitcall/consumer/getpolicy/Config.json" }
+					}
+				},
+				{
+					"type": "object",
+					"required": ["setpolicy_consumer"],
+					"properties": {
+						"setpolicy_consumer": { "$ref": "https://corezoid.com/schema/gitcall/app/gitcall/dundergitcall/consumer/setpolicy/Config.json" }
+					}
+				},
+				{
+					"type": "object",
+					"required": ["removepolicy_consumer"],
+					"properties": {
+						"removepolicy_consumer": { "$ref": "https://corezoid.com/schema/gitcall/app/gitcall/dundergitcall/consumer/setpolicy/Config.json" }
+					}
+				}
+			]
+		},
+		"dundergitcall": { "$ref": "https://corezoid.com/schema/gitcall/internal/app/gitcall/dundergitcall/Config.json" },
+		"statuscleaner": { "$ref": "https://corezoid.com/schema/gitcall/pkg/statuscleaner/Config.json" },
+		"status_update_exchange": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "gitcall-v2-status-update", "description": "This is a topic exchange.\nIt could be used by GitCall clients to consume summarized status updates." },
+		"servicestopper": { "$ref": "https://corezoid.com/schema/gitcall/pkg/servicestopper/Config.json" },
+		"servicespimp": { "$ref": "https://git.corezoid.com/gitcall/gitcall/internal/pkg/pimp/Config" },
+		"enigma": { "$ref": "https://corezoid.com/schema/gitcall/internal/pkg/cipher/EnigmaConfig.json" },
+		"gopsagent": { "$ref": "https://git.corezoid.com/go-pkgs/gopsagent/meta.go#ConfigSchema" }
+	}
+}

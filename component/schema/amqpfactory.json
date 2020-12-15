@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://corezoid.com/schema/gitcall/internal/pkg/amqpfactory/Config.json",
+    "type": "object",
+	"required": ["host", "port", "username", "password", "vhost"],
+	"description": "Defines a connection to RabbitMQ server",
+	"properties": {
+		"host": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "${GITCALL_RABBITMQ_HOST}"},
+		"port": { "type":  ["string", "number"], "min": 1, "max": 65535, "default": "${int:GITCALL_RABBITMQ_PORT}"},
+		"username": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "${GITCALL_RABBITMQ_USERNAME}" },
+		"password": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "${GITCALL_RABBITMQ_PASSWORD}" },
+		"vhost": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "${GITCALL_RABBITMQ_VHOST}" }
+	}
+}

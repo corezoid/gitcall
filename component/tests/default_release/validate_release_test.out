@@ -1,0 +1,4 @@
+level=info msg="Loading release from current dir"
+level=info msg="Validating release schema"
+level=info msg="Validating gitcall: main.json schema"
+level=info msg="Release valid"

@@ -1,0 +1,8 @@
+level=error msg="gitcall.config.dundergitcall.docker_daemon.host: Does not match format 'uri'"
+level=error msg="gitcall.config.dundergitcall.docker_daemon.host: String length must be greater than or equal to 1"
+level=error msg="gitcall.config.dundergitcall.global_policy.usercode_scale_prometheus_server: String length must be greater than or equal to 1"
+level=error msg="gitcall.config.dundergitcall.global_policy: Must validate all the schemas (allOf)"
+level=error msg="gitcall.config.dundergitcall.usercode_registry: String length must be greater than or equal to 1"
+level=error msg="gitcall.config.dundergitcall.usercode_registry_schema: Invalid type. Expected: string, given: null"
+level=error msg="gitcall.config.servicespimp.access_token: Invalid type. Expected: string, given: null"
+level=error msg="gitcall.config.servicespimp.uri: Invalid type. Expected: string, given: null"

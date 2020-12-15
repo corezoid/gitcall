@@ -1,0 +1,291 @@
+gitcall:
+    # [REQUIRED]: object.
+    config:
+        # [REQUIRED]: undefined.
+        amqp:
+            # [REQUIRED]: undefined.
+            connections:
+                # [REQUIRED]: array.
+                - host: '${GITCALL_RABBITMQ_HOST}'
+                  password: '${GITCALL_RABBITMQ_PASSWORD}'
+                  port: '${int:GITCALL_RABBITMQ_PORT}'
+                  username: '${GITCALL_RABBITMQ_USERNAME}'
+                  vhost: '${GITCALL_RABBITMQ_VHOST}'
+            buildservice_consumer:
+                # [REQUIRED]: undefined.
+                exchange: 'gitcall-v2'
+                # [REQUIRED]: string.
+                num_consumers: 10
+                # [REQUIRED]: number.
+                prefetch: 10
+                # [REQUIRED]: number.
+                queue: 'gitcall-v2-buildservice'
+                # [REQUIRED]: string.
+            buildarchive_consumer:
+                # [REQUIRED]: undefined.
+                exchange: 'gitcall-v2'
+                # [REQUIRED]: string.
+                num_consumers: 10
+                # [REQUIRED]: number.
+                prefetch: 10
+                # [REQUIRED]: number.
+                queue: 'gitcall-v2-buildarchive'
+                # [REQUIRED]: string.
+            runservice_consumer:
+                # [REQUIRED]: undefined.
+                exchange: 'gitcall-v2'
+                # [REQUIRED]: string.
+                num_consumers: 10
+                # [REQUIRED]: number.
+                prefetch: 10
+                # [REQUIRED]: number.
+                queue: 'gitcall-v2-runservice'
+                # [REQUIRED]: string.
+            deployservice_consumer:
+                # [REQUIRED]: undefined.
+                exchange: 'gitcall-v2'
+                # [REQUIRED]: string.
+                num_consumers: 10
+                # [REQUIRED]: number.
+                prefetch: 10
+                # [REQUIRED]: number.
+                queue: 'gitcall-v2-deployservice'
+                # [REQUIRED]: string.
+            getservice_consumer:
+                # [REQUIRED]: undefined.
+                exchange: 'gitcall-v2'
+                # [REQUIRED]: string.
+                num_consumers: 20
+                # [REQUIRED]: number.
+                prefetch: 20
+                # [REQUIRED]: number.
+                queue: 'gitcall-v2-getservice'
+                # [REQUIRED]: string.
+            removeservice_consumer:
+                # [REQUIRED]: undefined.
+                exchange: 'gitcall-v2'
+                # [REQUIRED]: string.
+                num_consumers: 10
+                # [REQUIRED]: number.
+                prefetch: 10
+                # [REQUIRED]: number.
+                queue: 'gitcall-v2-removeservice'
+                # [REQUIRED]: string.
+            stopservice_consumer:
+                # [REQUIRED]: undefined.
+                exchange: 'gitcall-v2'
+                # [REQUIRED]: string.
+                num_consumers: 10
+                # [REQUIRED]: number.
+                prefetch: 10
+                # [REQUIRED]: number.
+                queue: 'gitcall-v2-stopservice'
+                # [REQUIRED]: string.
+            validateservice_consumer:
+                # [REQUIRED]: undefined.
+                exchange: 'gitcall-v2'
+                # [REQUIRED]: string.
+                num_consumers: 10
+                # [REQUIRED]: number.
+                prefetch: 10
+                # [REQUIRED]: number.
+                queue: 'gitcall-v2-validateservice'
+                # [REQUIRED]: string.
+            saveservice_consumer:
+                # [REQUIRED]: undefined.
+                exchange: 'gitcall-v2'
+                # [REQUIRED]: string.
+                num_consumers: 10
+                # [REQUIRED]: number.
+                prefetch: 10
+                # [REQUIRED]: number.
+                queue: 'gitcall-v2-saveservice'
+                # [REQUIRED]: string.
+            statusupdate_consumer:
+                # [REQUIRED]: undefined.
+                prefetch: 20
+                # [REQUIRED]: number.
+                queue: 'dundergitcall-status-update'
+                # [REQUIRED]: string.
+            getpolicy_consumer:
+                # [REQUIRED]: undefined.
+                exchange: 'gitcall-v2'
+                # [REQUIRED]: string.
+                num_consumers: 2
+                # [REQUIRED]: number.
+                prefetch: 2
+                # [REQUIRED]: number.
+                queue: 'gitcall-v2-getpolicy'
+                # [REQUIRED]: string.
+            setpolicy_consumer:
+                # [REQUIRED]: undefined.
+                exchange: 'gitcall-v2'
+                # [REQUIRED]: string.
+                num_consumers: 2
+                # [REQUIRED]: number.
+                prefetch: 2
+                # [REQUIRED]: number.
+                queue: 'gitcall-v2-setpolicy'
+                # [REQUIRED]: string.
+            removepolicy_consumer:
+                # [REQUIRED]: undefined.
+                exchange: 'gitcall-v2'
+                # [REQUIRED]: string.
+                num_consumers: 2
+                # [REQUIRED]: number.
+                prefetch: 2
+                # [REQUIRED]: number.
+                queue: 'gitcall-v2-setpolicy'
+                # [REQUIRED]: string.
+        db:
+            # [REQUIRED]: object.
+            dsn: 'postgres://${GITCALL_POSTGRESQL_USERNAME}:${GITCALL_POSTGRESQL_PASSWORD}@${GITCALL_POSTGRESQL_HOST}:${GITCALL_POSTGRESQL_PORT}/gitcall?sslmode=disable&binary_parameters=yes'
+            # [REQUIRED]: string.
+            dundergitcall_policy_table_name: 'dundergitcall_policy'
+            # [REQUIRED]: string.
+            dundergitcall_table_name: 'dundergitcall_service'
+            # [REQUIRED]: string.
+            genversion_table_name: 'genversion'
+            # [REQUIRED]: string.
+            statusupdate_table_name: 'dundergitcall_status_update'
+            # [REQUIRED]: string.
+        dundergitcall:
+            # [REQUIRED]: undefined.
+            docker_config:
+                auths: {}
+            docker_daemon:
+                # [REQUIRED]: object.
+                host: 'http://docker.host'
+                # [REQUIRED]: string.
+            global_policy:
+                # [REQUIRED]: undefined.
+                dundergitcall_enabled: true
+                dundergitcall_image: 'docker-hub.middleware.biz/gitcall/dundergitcall:latest'
+                dundergitcall_limit_cpu_milli_cores: 200
+                dundergitcall_limit_memory_mb: 100
+                dundergitcall_max_replicas: 2
+                dundergitcall_min_replicas: 1
+                dundergitcall_request_cpu_milli_cores: 100
+                dundergitcall_request_memory_mb: 50
+                usercode_body_size_limit_bytes: 128000
+                usercode_js_runner_image: 'docker-hub.middleware.biz/public/gitcall/js-runner:latest'
+                usercode_limit_cpu_milli_cores: 100
+                usercode_limit_memory_mb: 50
+                usercode_max_replicas: 10
+                usercode_min_replicas: 1
+                usercode_php_runner_image: 'docker-hub.middleware.biz/public/gitcall/php-runner:latest'
+                usercode_php_runtime_image: 'docker-hub.middleware.biz/gitcall/php-runtime:latest'
+                usercode_proxy_image: 'docker-hub.middleware.biz/gitcall/usercode-proxy:latest'
+                usercode_python_runner_image: 'docker-hub.middleware.biz/public/gitcall/python-runner:latest'
+                usercode_python_runtime_image: 'python:3'
+                usercode_request_cpu_milli_cores: 100
+                usercode_request_memory_mb: 50
+                usercode_scale_cpu_average_utilization: 80
+                usercode_scale_prometheus_server: 'prometheus.host'
+            gopsagent:
+                enabled: false
+            prometheus:
+                enabled: false
+            sentry:
+                enabled: false
+            status_update_period_sec: 30
+            # [REQUIRED]: number.
+            status_update_queue: 'dundergitcall-status-update'
+            # [REQUIRED]: string.
+            system_amqp:
+                # [REQUIRED]: object.
+                host: '${DUNDERGITCALL_SYSTEM_RABBITMQ_HOST}'
+                # [REQUIRED]: string.
+                password: '${DUNDERGITCALL_SYSTEM_RABBITMQ_PASSWORD}'
+                # [REQUIRED]: string.
+                port: '${int:DUNDERGITCALL_SYSTEM_RABBITMQ_PORT}'
+                # [REQUIRED]: [string,number].
+                username: '${DUNDERGITCALL_SYSTEM_RABBITMQ_USERNAME}'
+                # [REQUIRED]: string.
+                vhost: '${DUNDERGITCALL_SYSTEM_RABBITMQ_VHOST}'
+                # [REQUIRED]: string.
+            task_amqp:
+                # [REQUIRED]: object.
+                host: '${DUNDERGITCALL_TASK_RABBITMQ_HOST}'
+                # [REQUIRED]: string.
+                password: '${DUNDERGITCALL_TASK_RABBITMQ_PASSWORD}'
+                # [REQUIRED]: string.
+                port: '${int:DUNDERGITCALL_TASK_RABBITMQ_PORT}'
+                # [REQUIRED]: [string,number].
+                prefetch: 50
+                # [REQUIRED]: number.
+                username: '${DUNDERGITCALL_TASK_RABBITMQ_USERNAME}'
+                # [REQUIRED]: string.
+                vhost: '${DUNDERGITCALL_TASK_RABBITMQ_VHOST}'
+                # [REQUIRED]: string.
+                workers_num: 50
+                # [REQUIRED]: number.
+            tmp_dir: '/tmp/gitcall'
+            # [REQUIRED]: string.
+            usercode:
+                # [REQUIRED]: object.
+                discovery_period_ms: 60000
+                # [REQUIRED]: number.
+                reconnect_period_ms: 5000
+                # [REQUIRED]: number.
+                service_port: 9999
+                # [REQUIRED]: number.
+                startup_discovery_period_ms: 100
+                # [REQUIRED]: number.
+                startup_period_ms: 300000
+                # [REQUIRED]: number.
+                worker_num: 50
+                # [REQUIRED]: number.
+            usercode_registry_schema: http
+            usercode_registry: 'registry.host'
+            # [REQUIRED]: string.
+        enigma:
+            enabled: false
+        gopsagent:
+            enabled: false
+        prometheus:
+            enabled: false
+        sentry:
+            enabled: false
+        servicespimp:
+            # [REQUIRED]: undefined.
+            access_token: "atoken"
+            # [REQUIRED]: string.
+            uri: "http://pimp.host:9999"
+            # [REQUIRED]: string.
+        status_update_exchange: gitcall-v2-status-exchange
+        servicestopper:
+            # [REQUIRED]: undefined.
+            check_period_ms: 60000
+            # [REQUIRED]: number.
+            maybe_stop_after_idling_sec: 600
+            # [REQUIRED]: number.
+            stop_after_maybe_stop_ms: 15000
+            # [REQUIRED]: number.
+            worker_pool_size: 10
+            # [REQUIRED]: number.
+        statuscleaner:
+            # [REQUIRED]: undefined.
+            outdated_check_period_ms: 20000
+            # [REQUIRED]: number.
+            outdated_query_limit: 100
+            # [REQUIRED]: number.
+            outdated_time_ms: 90000
+            # [REQUIRED]: number.
+release:
+    name: 'gitcall_release'
+    require:
+        gitcall: 'aVersion'
+        postgresql: 'develop'
+        rabbitmq: 'develop'
+    repositories:
+        gitcall:
+            source: 'local'
+            local:
+                path: '../../'
+        postgresql:
+            source: 'local'
+            local: { path: '../_components/postgresql' }
+        rabbitmq:
+            source: 'local'
+            local: { path: '../_components/rabbitmq' }

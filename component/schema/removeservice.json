@@ -1,0 +1,13 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://corezoid.com/schema/gitcall/app/gitcall/dundergitcall/consumer/removeservice/Config.json",
+	"type": "object",
+	"required": ["exchange", "queue", "prefetch", "num_consumers"],
+	"description": "The consumer removes usercode.\nIf usercode is in running state it stops it.\nOtherwise, the service is marked deleted in database, and images are removed from registry.",
+	"properties": {
+		"exchange": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "gitcall-v2", "description": "The queue is bound to this exchange" },
+		"queue": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "gitcall-v2-removeservice" },
+		"prefetch": { "type":  "number", "min": 1, "max": 1000, "default": 10, "description": "Defines how many statuses could be processed simultaneously"},
+		"num_consumers": { "type":  "number", "min": 1, "max": 1000, "default": 10, "description": "Defines number of consumer workers started internally. Should be equal to prefetch size."}
+	}
+}

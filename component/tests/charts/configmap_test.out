@@ -1,0 +1,208 @@
+# Source: gitcall_release/charts/gitcall/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: RELEASE-NAME-gitcall-config
+  labels:
+    release: "RELEASE-NAME"
+    app: "gitcall"
+    tier: "gitcall"
+data:
+  gitcall.json: |
+    {
+      "amqp": {
+        "buildarchive_consumer": {
+          "exchange": "gitcall-v2",
+          "num_consumers": 10,
+          "prefetch": 10,
+          "queue": "gitcall-v2-buildarchive"
+        },
+        "buildservice_consumer": {
+          "exchange": "gitcall-v2",
+          "num_consumers": 10,
+          "prefetch": 10,
+          "queue": "gitcall-v2-buildservice"
+        },
+        "connections": [
+          {
+            "host": "${GITCALL_RABBITMQ_HOST}",
+            "password": "${GITCALL_RABBITMQ_PASSWORD}",
+            "port": "${int:GITCALL_RABBITMQ_PORT}",
+            "username": "${GITCALL_RABBITMQ_USERNAME}",
+            "vhost": "${GITCALL_RABBITMQ_VHOST}"
+          }
+        ],
+        "deployservice_consumer": {
+          "exchange": "gitcall-v2",
+          "num_consumers": 10,
+          "prefetch": 10,
+          "queue": "gitcall-v2-deployservice"
+        },
+        "getpolicy_consumer": {
+          "exchange": "gitcall-v2",
+          "num_consumers": 2,
+          "prefetch": 2,
+          "queue": "gitcall-v2-getpolicy"
+        },
+        "getservice_consumer": {
+          "exchange": "gitcall-v2",
+          "num_consumers": 20,
+          "prefetch": 20,
+          "queue": "gitcall-v2-getservice"
+        },
+        "removepolicy_consumer": {
+          "exchange": "gitcall-v2",
+          "num_consumers": 2,
+          "prefetch": 2,
+          "queue": "gitcall-v2-setpolicy"
+        },
+        "removeservice_consumer": {
+          "exchange": "gitcall-v2",
+          "num_consumers": 10,
+          "prefetch": 10,
+          "queue": "gitcall-v2-removeservice"
+        },
+        "runservice_consumer": {
+          "exchange": "gitcall-v2",
+          "num_consumers": 10,
+          "prefetch": 10,
+          "queue": "gitcall-v2-runservice"
+        },
+        "saveservice_consumer": {
+          "exchange": "gitcall-v2",
+          "num_consumers": 10,
+          "prefetch": 10,
+          "queue": "gitcall-v2-saveservice"
+        },
+        "setpolicy_consumer": {
+          "exchange": "gitcall-v2",
+          "num_consumers": 2,
+          "prefetch": 2,
+          "queue": "gitcall-v2-setpolicy"
+        },
+        "statusupdate_consumer": {
+          "prefetch": 20,
+          "queue": "dundergitcall-status-update"
+        },
+        "stopservice_consumer": {
+          "exchange": "gitcall-v2",
+          "num_consumers": 10,
+          "prefetch": 10,
+          "queue": "gitcall-v2-stopservice"
+        },
+        "validateservice_consumer": {
+          "exchange": "gitcall-v2",
+          "num_consumers": 10,
+          "prefetch": 10,
+          "queue": "gitcall-v2-validateservice"
+        }
+      },
+      "db": {
+        "dsn": "postgres://${GITCALL_POSTGRESQL_USERNAME}:${GITCALL_POSTGRESQL_PASSWORD}@${GITCALL_POSTGRESQL_HOST}:${GITCALL_POSTGRESQL_PORT}/gitcall?sslmode=disable\u0026binary_parameters=yes",
+        "dundergitcall_policy_table_name": "dundergitcall_policy",
+        "dundergitcall_table_name": "dundergitcall_service",
+        "genversion_table_name": "genversion",
+        "statusupdate_table_name": "dundergitcall_status_update"
+      },
+      "dundergitcall": {
+        "docker_config": {
+          "auths": {}
+        },
+        "docker_daemon": {
+          "host": "http://docker.host"
+        },
+        "global_policy": {
+          "dundergitcall_enabled": true,
+          "dundergitcall_image": "docker-hub.middleware.biz/gitcall/dundergitcall:latest",
+          "dundergitcall_limit_cpu_milli_cores": 200,
+          "dundergitcall_limit_memory_mb": 100,
+          "dundergitcall_max_replicas": 2,
+          "dundergitcall_min_replicas": 1,
+          "dundergitcall_request_cpu_milli_cores": 100,
+          "dundergitcall_request_memory_mb": 50,
+          "usercode_body_size_limit_bytes": 128000,
+          "usercode_js_runner_image": "docker-hub.middleware.biz/public/gitcall/js-runner:latest",
+          "usercode_limit_cpu_milli_cores": 100,
+          "usercode_limit_memory_mb": 50,
+          "usercode_max_replicas": 10,
+          "usercode_min_replicas": 1,
+          "usercode_php_runner_image": "docker-hub.middleware.biz/public/gitcall/php-runner:latest",
+          "usercode_php_runtime_image": "docker-hub.middleware.biz/gitcall/php-runtime:latest",
+          "usercode_proxy_image": "docker-hub.middleware.biz/gitcall/usercode-proxy:latest",
+          "usercode_python_runner_image": "docker-hub.middleware.biz/public/gitcall/python-runner:latest",
+          "usercode_python_runtime_image": "python:3",
+          "usercode_request_cpu_milli_cores": 100,
+          "usercode_request_memory_mb": 50,
+          "usercode_scale_cpu_average_utilization": 80,
+          "usercode_scale_prometheus_server": "http://prometheus.host"
+        },
+        "gopsagent": {
+          "enabled": false
+        },
+        "prometheus": {
+          "enabled": false
+        },
+        "sentry": {
+          "enabled": false
+        },
+        "status_update_period_sec": 30,
+        "status_update_queue": "dundergitcall-status-update",
+        "system_amqp": {
+          "host": "${DUNDERGITCALL_SYSTEM_RABBITMQ_HOST}",
+          "password": "${DUNDERGITCALL_SYSTEM_RABBITMQ_PASSWORD}",
+          "port": "${int:DUNDERGITCALL_SYSTEM_RABBITMQ_PORT}",
+          "username": "${DUNDERGITCALL_SYSTEM_RABBITMQ_USERNAME}",
+          "vhost": "${DUNDERGITCALL_SYSTEM_RABBITMQ_VHOST}"
+        },
+        "task_amqp": {
+          "host": "${DUNDERGITCALL_TASK_RABBITMQ_HOST}",
+          "password": "${DUNDERGITCALL_TASK_RABBITMQ_PASSWORD}",
+          "port": "${int:DUNDERGITCALL_TASK_RABBITMQ_PORT}",
+          "prefetch": 50,
+          "username": "${DUNDERGITCALL_TASK_RABBITMQ_USERNAME}",
+          "vhost": "${DUNDERGITCALL_TASK_RABBITMQ_VHOST}",
+          "workers_num": 50
+        },
+        "tmp_dir": "/tmp/gitcall",
+        "usercode": {
+          "discovery_period_ms": 60000,
+          "reconnect_period_ms": 5000,
+          "service_port": 9999,
+          "startup_discovery_period_ms": 100,
+          "startup_period_ms": 300000,
+          "worker_num": 50
+        },
+        "usercode_registry": "registry.host",
+        "usercode_registry_schema": "http"
+      },
+      "enigma": {
+        "enabled": false
+      },
+      "gopsagent": {
+        "enabled": false
+      },
+      "prometheus": {
+        "enabled": false
+      },
+      "sentry": {
+        "enabled": false
+      },
+      "servicespimp": {
+        "access_token": "aToken",
+        "uri": "http://servicespimp.host"
+      },
+      "servicestopper": {
+        "check_period_ms": 60000,
+        "maybe_stop_after_idling_sec": 600,
+        "stop_after_maybe_stop_ms": 15000,
+        "worker_pool_size": 10
+      },
+      "status_update_exchange": "gitcall-v2-status-exchange",
+      "statuscleaner": {
+        "outdated_check_period_ms": 20000,
+        "outdated_query_limit": 100,
+        "outdated_time_ms": 90000
+      }
+    }
+---
+# Source: gitcall_release/charts/gitcall/templates/deployment.yaml

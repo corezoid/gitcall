@@ -1,0 +1,5 @@
+component_name: postgresql
+
+helm:
+  enabled: true
+  global: true

@@ -1,0 +1,28 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://corezoid.com/schema/gitcall/internal/pkg/cipher/EnigmaConfig.json",
+	"description": "Consumers might work with messages encrypted by Enigma services.\nTo enable encrypted communication:\n * configure this section\n * send encrypted messages with use_enigma=true header.",
+	"oneOf": [
+		{
+			"type": "object",
+			"required": ["version", "owner_key_id", "enigma_key_manager_host", "cert_file", "cert_key", "ca_pem", "not_secure_tls"],
+			"properties": {
+				"enabled": { "type": "boolean", "enum": [true], "default": true },
+				"version": { "type":  "number", "min": 1, "default": 1 },
+				"owner_key_id": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "" },
+				"enigma_key_manager_host": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "" },
+				"cert_file": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "" },
+				"cert_key": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "" },
+				"ca_pem": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "" },
+				"not_secure_tls": { "type":  "boolean", "default": false }
+			}
+		},
+		{
+			"type": "object",
+			"cz:default": true,
+			"properties": {
+				"enabled": { "type": "boolean", "enum": [false], "default": false }
+			}
+		}
+	]
+}

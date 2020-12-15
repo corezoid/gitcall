@@ -1,0 +1,17 @@
+# Source: gitcall_release/charts/gitcall/templates/autoscale.yaml
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: RELEASE-NAME-gitcall-autoscale
+  labels:
+    release: "RELEASE-NAME"
+    app: "gitcall"
+    tier: "gitcall"
+spec:
+  minReplicas: 1
+  maxReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: RELEASE-NAME-gitcall-deployment
+  targetCPUUtilizationPercentage: 80

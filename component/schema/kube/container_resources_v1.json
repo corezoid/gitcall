@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schema.corezoid.com/packages/kube/container_resources_v1.json",
+  "type": "object",
+  "required": ["limits", "requests"],
+  "properties": {
+    "limits": {
+      "type": "object",
+      "required": ["cpu", "memory"],
+      "properties": {
+        "cpu": { "type": "string", "minLength": 1, "maxLength": 10, "default": "500m" },
+        "memory": { "type": "string", "minLength": 1, "maxLength": 10, "default": "500Mi" }
+      }
+    },
+    "requests": {
+      "type": "object",
+      "required": ["cpu", "memory"],
+      "properties": {
+        "cpu": { "type": "string", "minLength": 1, "maxLength": 10, "default": "500m" },
+        "memory": { "type": "string", "minLength": 1, "maxLength": 10, "default": "500Mi" }
+      }
+    }
+  }
+}
+

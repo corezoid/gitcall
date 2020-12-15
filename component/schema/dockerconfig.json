@@ -1,0 +1,20 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://git.corezoid.com/gitcall/gitcall/internal/pkg/dockerconfig/meta.go#Config",
+	"type": "object",
+	"description": "Defines docker registry credentials. Credentials might be used to push usercode images to private registry.",
+	"properties": {
+		"auths": { 
+			"type": "object",
+			"patternProperties": {
+				".+": { 
+					"type": "object",
+					"properties": {
+						"username": { "type": "string", "minLength": 0, "maxLength": 10000 },
+						"password": { "type": "string", "minLength": 0, "maxLength": 10000 }
+					}
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,33 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://corezoid.com/schema/gitcall/internal/app/gitcall/dundergitcall/policyservice/policymodel/Policy.json",
+	"type": "object",
+	"description": "Section contains some settings that could be adjusted on user, group or service level.\nConfig defines global settings.\nGlobal settings could be set in database too. In this case, the db value overwrites config one.",
+	"additionalProperties": false, 
+	"properties": {
+		"dundergitcall_enabled": { "type":  "boolean", "default": true, "description": "Allows enable\\disable dundergitcall feature. All dundergitcall consumer would return error if disabled."},
+		"dundergitcall_image": { "type":  "string", "minLength": 1, "maxLength": 1000, "default": "docker-hub.middleware.biz/gitcall/dundergitcall:latest", "description": "The dundergitcal image. Dundergitcall is responsible for\n * usercode services discovery\n * Proxying tasks from RabbitMQ to usercode services\n * Gathering metrics for usercode HPA"},
+		"dundergitcall_request_cpu_milli_cores": { "type":  "integer", "min": 1, "max": 10000, "default": 100, "description": "The amount of CPU dundergitcal gets on start. In millicors (1 CPU = 1000)"},
+		"dundergitcall_request_memory_mb": { "type":  "integer", "min": 1, "max": 10000, "default": 50, "description": "The amount of memory dundergitcall gets on start. In megabytes" },
+		"dundergitcall_limit_cpu_milli_cores": { "type":  "integer", "min": 1, "max": 10000, "default": 200, "description": "The limit of CPU dundergitcal has. In millicors (1 CPU = 1000)"},
+		"dundergitcall_limit_memory_mb": { "type":  "integer", "min": 1, "max": 10000, "default": 100, "description": "The limit of memory dundergitcal has. In megabytes"},
+		"dundergitcall_min_replicas": { "type":  "integer", "min": 1, "max": 100, "default": 1, "description": "Minimum\\Initial number of dundergitcall replicas"},
+		"dundergitcall_max_replicas": { "type":  "integer", "min": 1, "max": 1000, "default": 2, "description": "Maximum number of dundergitcall replicas"},
+		"usercode_limit_per_owner": { "type":  "integer", "min": 0, "max": 10000, "default": 0, "description": "Maximum number of usercode services an owner can use.\nCould be set globally and on owner level.\nGroup and service level take no effect."},
+		"usercode_proxy_image": { "type":  "string", "minLength": 1, "maxLength": 1000, "default": "docker-hub.middleware.biz/gitcall/usercode-proxy:latest", "description": "The usercode proxy image. The proxy is responsible for\n * Starting\\Controlling a process with a function\n * Accepting task requests from chosen dundergitcall service"},
+		"usercode_php_runner_image": { "type":  "string", "minLength": 1, "maxLength": 1000, "default": "docker-hub.middleware.biz/public/gitcall/php-runner:latest", "description": "The runner image is used on codebuild stage. The runner is injected to usercode image and set as image entrypoint" },
+		"usercode_php_runtime_image": { "type":  "string", "minLength": 1, "maxLength": 1000, "default": "docker-hub.middleware.biz/gitcall/php-runtime:latest", "description": "The runtime image is used on codebuild stage. It is used as base image for usercode image."},
+		"usercode_js_runner_image": { "type":  "string", "minLength": 1, "maxLength": 1000, "default": "docker-hub.middleware.biz/public/gitcall/js-runner:latest", "description": "The runner image is used on codebuild stage. The runner is injected to usercode image and set as image entrypoint"},
+		"usercode_python_runtime_image": { "type":  "string", "minLength": 1, "maxLength": 1000, "default": "python:3", "description": "The runtime image is used on codebuild stage. It is used as base image for usercode image."},
+		"usercode_python_runner_image": { "type":  "string", "minLength": 1, "maxLength": 1000, "default": "docker-hub.middleware.biz/public/gitcall/python-runner:latest", "description": "The runner image is used on codebuild stage. The runner is injected to usercode image and set as image entrypoint"},
+		"usercode_request_cpu_milli_cores": { "type":  "integer", "min": 1, "max": 10000, "default": 100, "description": "The amount of CPU usercode gets on start. In millicors (1 CPU = 1000)"},
+		"usercode_request_memory_mb": { "type":  "integer", "min": 1, "max": 10000, "default": 50, "description": "The amount of memory usercode gets on start. In megabytes"},
+		"usercode_limit_cpu_milli_cores": { "type":  "integer", "min": 1, "max": 10000, "default": 100, "description": "The limit of CPU usercode has. In millicors (1 CPU = 1000)"},
+		"usercode_limit_memory_mb": { "type":  "integer", "min": 1, "max": 10000, "default": 50, "description": "The limit of memory usercode has. In megabytes"},
+		"usercode_body_size_limit_bytes": { "type":  "integer", "min": 0, "max": 1048576, "default": 128000, "description": "The dundergitcall compares usercode reply size with the limit. Rejects everything that is bigger it. In bytes." },
+		"usercode_min_replicas": { "type":  "integer", "min": 1, "max": 100, "default": 1, "description": "Minimum\\Initial number of dundergitcall replicas"},
+		"usercode_max_replicas": { "type":  "integer", "min": 1, "max": 1000, "default": 10, "description": "Maximum number of dundergitcall replicas"},
+		"usercode_scale_cpu_average_utilization": { "type":  "integer", "min": 1, "max": 100, "default": 80, "description": "Scale usercode pods up if average CPU reach this value."},
+		"usercode_scale_prometheus_server": { "type":  "string", "minLength": 1, "maxLength": 1000, "default": "", "description": "The prometheus server that collects dundergitcall metrics and used in usercode HPA (through external metrics)" }
+	}
+}

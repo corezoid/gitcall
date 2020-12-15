@@ -1,0 +1,23 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://git.corezoid.com/go-pkgs/gopsagent/meta.go#ConfigSchema",
+	"description": "gops tool https://github.com/google/gops. Useful for profiling CPU and Memory in prod.",
+	"oneOf": [
+		{
+			"type": "object",
+			"cz:default": true,
+			"required": ["enabled", "host", "port"],
+			"properties": {
+				"enabled": { "type": "boolean", "enum": [true], "default": true },
+				"host": { "type":  "string", "default": "127.0.0.1", "minLength": 1, "maxLength": 10000 },
+				"port": { "type":  "number", "default": 6527, "min": 1, "max": 65535 }
+			}
+		},
+		{
+			"type": "object",
+			"properties": {
+				"enabled": { "type": "boolean", "enum": [false], "default": false }
+			}
+		}
+	]
+}

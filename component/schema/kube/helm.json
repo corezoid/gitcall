@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schema.corezoid.com/packages/kube/helm.json",
+  "type": "object",
+  "required": ["kube"],
+  "properties": {
+    "kube_goodies": {
+      "type": "object",
+      "properties": {
+        "dockerconfig_secrets": { "$ref": "https://schema.corezoid.com/packages/kube/dockerconfig_secrets_v1.json" },
+        "secrets": { "$ref": "https://schema.corezoid.com/packages/kube/secrets_v1.json" },
+        "ingress": { "$ref": "https://schema.corezoid.com/packages/kube/ingress_v1.json" }
+      }
+    }
+  }
+}

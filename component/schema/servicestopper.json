@@ -1,0 +1,13 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://corezoid.com/schema/gitcall/pkg/servicestopper/Config.json",
+	"type": "object",
+	"required": ["maybe_stop_after_idling_sec", "stop_after_maybe_stop_ms", "worker_pool_size", "check_period_ms"],
+	"description": "Service stopper is responsible for stopping idling usercode functions.",
+	"properties": {
+		"maybe_stop_after_idling_sec": { "type": "number", "min": 1, "default":  600, "description": "How many seconds a usercode can idle before it is stopped"},
+		"stop_after_maybe_stop_ms": { "type": "number", "min": 1, "default": 15000, "description": "The grace period.\nAt start stopper sends maybe stop status to all subscribers and waits.\nAt the end, if status still idle, the code is actually stopped (removed from k8s)." },
+		"worker_pool_size": { "type": "number", "min": 1, "default": 10, "description": "Defines how many usercode functions could be stopped simultaneously."},
+		"check_period_ms": { "type": "number", "min": 1, "default": 60000, "description": "Periods the stopper performs status check"}
+	}
+}

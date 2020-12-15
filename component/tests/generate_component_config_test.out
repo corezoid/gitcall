@@ -1,0 +1,507 @@
+# [REQUIRED]: object.
+gitcall:
+    # [REQUIRED]
+    config:
+        # [REQUIRED]
+        amqp:
+            # [REQUIRED]: array.
+            connections:
+                - host: '${GITCALL_RABBITMQ_HOST}'
+                  password: '${GITCALL_RABBITMQ_PASSWORD}'
+                  port: '${int:GITCALL_RABBITMQ_PORT}'
+                  username: '${GITCALL_RABBITMQ_USERNAME}'
+                  vhost: '${GITCALL_RABBITMQ_VHOST}'
+            # [REQUIRED]
+            # The consumer build usercode images
+            buildservice_consumer:
+                # [REQUIRED]: string.
+                # The queue is bound to this exchange
+                exchange: 'gitcall-v2'
+                # [REQUIRED]: number.
+                # Defines number of consumer workers started internally. Should be equal to prefetch size.
+                num_consumers: 10
+                # [REQUIRED]: number.
+                # Defines how many statuses could be processed simultaneously
+                prefetch: 10
+                # [REQUIRED]: string.
+                queue: 'gitcall-v2-buildservice'
+            # [REQUIRED]
+            # Defines build archive consumer settings.
+            # Could be used to get builds status
+            buildarchive_consumer:
+                # [REQUIRED]: string.
+                # The queue is bound to this exchange
+                exchange: 'gitcall-v2'
+                # [REQUIRED]: number.
+                # Defines number of consumer workers started internally. Should be equal to prefetch size.
+                num_consumers: 10
+                # [REQUIRED]: number.
+                # Defines how many statuses could be processed simultaneously
+                prefetch: 10
+                # [REQUIRED]: string.
+                queue: 'gitcall-v2-buildarchive'
+            # [REQUIRED]
+            # The consumers runs usercode in k8s.
+            # It calls Pimp service for that.
+            # It is somewhat smart and decide (based on status) whether the function should be deployed or not.
+            runservice_consumer:
+                # [REQUIRED]: string.
+                # The queue is bound to this exchange
+                exchange: 'gitcall-v2'
+                # [REQUIRED]: number.
+                # Defines number of consumer workers started internally. Should be equal to prefetch size.
+                num_consumers: 10
+                # [REQUIRED]: number.
+                # Defines how many statuses could be processed simultaneously
+                prefetch: 10
+                # [REQUIRED]: string.
+                queue: 'gitcall-v2-runservice'
+            # [REQUIRED]
+            # The consumer updates usercode version run in k8s cluster.
+            # If the function is in running state it triggers actual re-deploy.
+            # Otherwise, it just updates version in database.
+            deployservice_consumer:
+                # [REQUIRED]: string.
+                # The queue is bound to this exchange
+                exchange: 'gitcall-v2'
+                # [REQUIRED]: number.
+                # Defines number of consumer workers started internally. Should be equal to prefetch size.
+                num_consumers: 10
+                # [REQUIRED]: number.
+                # Defines how many statuses could be processed simultaneously
+                prefetch: 10
+                # [REQUIRED]: string.
+                queue: 'gitcall-v2-deployservice'
+            # [REQUIRED]
+            # The consumer sends usercode info in reply
+            getservice_consumer:
+                # [REQUIRED]: string.
+                # The queue is bound to this exchange
+                exchange: 'gitcall-v2'
+                # [REQUIRED]: number.
+                # Defines number of consumer workers started internally. Should be equal to prefetch size.
+                num_consumers: 20
+                # [REQUIRED]: number.
+                # Defines how many statuses could be processed simultaneously
+                prefetch: 20
+                # [REQUIRED]: string.
+                queue: 'gitcall-v2-getservice'
+            # [REQUIRED]
+            # The consumer removes usercode.
+            # If usercode is in running state it stops it.
+            # Otherwise, the service is marked deleted in database, and images are removed from registry.
+            removeservice_consumer:
+                # [REQUIRED]: string.
+                # The queue is bound to this exchange
+                exchange: 'gitcall-v2'
+                # [REQUIRED]: number.
+                # Defines number of consumer workers started internally. Should be equal to prefetch size.
+                num_consumers: 10
+                # [REQUIRED]: number.
+                # Defines how many statuses could be processed simultaneously
+                prefetch: 10
+                # [REQUIRED]: string.
+                queue: 'gitcall-v2-removeservice'
+            # [REQUIRED]
+            # The consumer stops usercode. It triggers service stopper internally.
+            stopservice_consumer:
+                # [REQUIRED]: string.
+                # The queue is bound to this exchange
+                exchange: 'gitcall-v2'
+                # [REQUIRED]: number.
+                # Defines number of consumer workers started internally. Should be equal to prefetch size.
+                num_consumers: 10
+                # [REQUIRED]: number.
+                # Defines how many statuses could be processed simultaneously
+                prefetch: 10
+                # [REQUIRED]: string.
+                queue: 'gitcall-v2-stopservice'
+            # [REQUIRED]
+            # The consumer could be used to perform some light validations against the usercode.
+            # The buildservice consumer calls it internally before building the image.
+            validateservice_consumer:
+                # [REQUIRED]: string.
+                # The queue is bound to this exchange
+                exchange: 'gitcall-v2'
+                # [REQUIRED]: number.
+                # Defines number of consumer workers started internally. Should be equal to prefetch size.
+                num_consumers: 10
+                # [REQUIRED]: number.
+                # Defines how many statuses could be processed simultaneously
+                prefetch: 10
+                # [REQUIRED]: string.
+                queue: 'gitcall-v2-validateservice'
+            # [REQUIRED]
+            # The consumer updates sandbox version of usercode. At this stage it might be invalid code.
+            saveservice_consumer:
+                # [REQUIRED]: string.
+                # The queue is bound to this exchange
+                exchange: 'gitcall-v2'
+                # [REQUIRED]: number.
+                # Defines number of consumer workers started internally. Should be equal to prefetch size.
+                num_consumers: 10
+                # [REQUIRED]: number.
+                # Defines how many statuses could be processed simultaneously
+                prefetch: 10
+                # [REQUIRED]: string.
+                queue: 'gitcall-v2-saveservice'
+            # [REQUIRED]
+            # The consumer processes status updates sent by dundergitcal services
+            statusupdate_consumer:
+                # [REQUIRED]: number.
+                # Defines how many statuses could be processed simultaneously
+                prefetch: 20
+                # [REQUIRED]: string.
+                # The queue to consume messages from
+                queue: 'dundergitcall-status-update'
+            # [REQUIRED]
+            # The consumer sends policy info in reply
+            getpolicy_consumer:
+                # [REQUIRED]: string.
+                # The queue is bound to this exchange
+                exchange: 'gitcall-v2'
+                # [REQUIRED]: number.
+                # Defines number of consumer workers started internally. Should be equal to prefetch size.
+                num_consumers: 2
+                # [REQUIRED]: number.
+                # Defines how many statuses could be processed simultaneously
+                prefetch: 2
+                # [REQUIRED]: string.
+                queue: 'gitcall-v2-getpolicy'
+            # [REQUIRED]
+            # The consumer sets the policy.
+            setpolicy_consumer:
+                # [REQUIRED]: string.
+                # The queue is bound to this exchange
+                exchange: 'gitcall-v2'
+                # [REQUIRED]: number.
+                # Defines number of consumer workers started internally. Should be equal to prefetch size.
+                num_consumers: 2
+                # [REQUIRED]: number.
+                # Defines how many statuses could be processed simultaneously
+                prefetch: 2
+                # [REQUIRED]: string.
+                queue: 'gitcall-v2-setpolicy'
+            # [REQUIRED]
+            # The consumer sets the policy.
+            removepolicy_consumer:
+                # [REQUIRED]: string.
+                # The queue is bound to this exchange
+                exchange: 'gitcall-v2'
+                # [REQUIRED]: number.
+                # Defines number of consumer workers started internally. Should be equal to prefetch size.
+                num_consumers: 2
+                # [REQUIRED]: number.
+                # Defines how many statuses could be processed simultaneously
+                prefetch: 2
+                # [REQUIRED]: string.
+                queue: 'gitcall-v2-setpolicy'
+        # [REQUIRED]: object.
+        db:
+            # [REQUIRED]: string.
+            dsn: 'postgres://${GITCALL_POSTGRESQL_USERNAME}:${GITCALL_POSTGRESQL_PASSWORD}@${GITCALL_POSTGRESQL_HOST}:${GITCALL_POSTGRESQL_PORT}/gitcall?sslmode=disable&binary_parameters=yes'
+        # [REQUIRED]
+        dundergitcall:
+            # Defines docker registry credentials. Credentials might be used to push usercode images to private registry.
+            docker_config:
+                # Property patterns:
+                # .+:
+                # password: null
+                # username: null
+                auths: {}
+            # [REQUIRED]: object.
+            # The docker daemon is used to built usercode images
+            docker_daemon:
+                # [REQUIRED]: string.
+                host: ''
+            # [REQUIRED]
+            global_policy:
+                # Allows enable\disable dundergitcall feature. All dundergitcall consumer would return error if disabled.
+                dundergitcall_enabled: true
+                # The dundergitcal image. Dundergitcall is responsible for
+                #  * usercode services discovery
+                #  * Proxying tasks from RabbitMQ to usercode services
+                #  * Gathering metrics for usercode HPA
+                dundergitcall_image: 'docker-hub.middleware.biz/gitcall/dundergitcall:latest'
+                # The limit of CPU dundergitcal has. In millicors (1 CPU = 1000)
+                dundergitcall_limit_cpu_milli_cores: 200
+                # The limit of memory dundergitcal has. In megabytes
+                dundergitcall_limit_memory_mb: 100
+                # Maximum number of dundergitcall replicas
+                dundergitcall_max_replicas: 2
+                # Minimum\Initial number of dundergitcall replicas
+                dundergitcall_min_replicas: 1
+                # The amount of CPU dundergitcal gets on start. In millicors (1 CPU = 1000)
+                dundergitcall_request_cpu_milli_cores: 100
+                # The amount of memory dundergitcall gets on start. In megabytes
+                dundergitcall_request_memory_mb: 50
+                # The dundergitcall compares usercode reply size with the limit. Rejects everything that is bigger it. In bytes.
+                usercode_body_size_limit_bytes: 128000
+                # The runner image is used on codebuild stage. The runner is injected to usercode image and set as image entrypoint
+                usercode_js_runner_image: 'docker-hub.middleware.biz/public/gitcall/js-runner:latest'
+                # The limit of CPU usercode has. In millicors (1 CPU = 1000)
+                usercode_limit_cpu_milli_cores: 100
+                # The limit of memory usercode has. In megabytes
+                usercode_limit_memory_mb: 50
+                # Maximum number of usercode services an owner can use.
+                # Could be set globally and on owner level.
+                # Group and service level take no effect.
+                usercode_limit_per_owner: 0
+                # Maximum number of dundergitcall replicas
+                usercode_max_replicas: 10
+                # Minimum\Initial number of dundergitcall replicas
+                usercode_min_replicas: 1
+                # The runner image is used on codebuild stage. The runner is injected to usercode image and set as image entrypoint
+                usercode_php_runner_image: 'docker-hub.middleware.biz/public/gitcall/php-runner:latest'
+                # The runtime image is used on codebuild stage. It is used as base image for usercode image.
+                usercode_php_runtime_image: 'docker-hub.middleware.biz/gitcall/php-runtime:latest'
+                # The usercode proxy image. The proxy is responsible for
+                #  * Starting\Controlling a process with a function
+                #  * Accepting task requests from chosen dundergitcall service
+                usercode_proxy_image: 'docker-hub.middleware.biz/gitcall/usercode-proxy:latest'
+                # The runner image is used on codebuild stage. The runner is injected to usercode image and set as image entrypoint
+                usercode_python_runner_image: 'docker-hub.middleware.biz/public/gitcall/python-runner:latest'
+                # The runtime image is used on codebuild stage. It is used as base image for usercode image.
+                usercode_python_runtime_image: 'python:3'
+                # The amount of CPU usercode gets on start. In millicors (1 CPU = 1000)
+                usercode_request_cpu_milli_cores: 100
+                # The amount of memory usercode gets on start. In megabytes
+                usercode_request_memory_mb: 50
+                # Scale usercode pods up if average CPU reach this value.
+                usercode_scale_cpu_average_utilization: 80
+                # The prometheus server that collects dundergitcall metrics and used in usercode HPA (through external metrics)
+                usercode_scale_prometheus_server: ''
+            # gops tool https://github.com/google/gops. Useful for profiling CPU and Memory in prod.
+            # Alternative settings:
+            # 1#
+            # enabled: false
+            gopsagent:
+                # [REQUIRED]: boolean.
+                enabled: true
+                # [REQUIRED]: string.
+                host: '127.0.0.1'
+                # [REQUIRED]: number.
+                port: 6527
+            # Expose prometheus metrics. There are two ways promapp can work
+            #  * scrape - the app starts metrics server that prometheus can scrape (preferred)
+            # * push - the app itself sends metrics to prometheus server
+            # Alternative settings:
+            # 0#
+            # [REQUIRED]: boolean.
+            # enabled: true
+            # [REQUIRED]: string.
+            # metrics_host: ''
+            # [REQUIRED]: number.
+            # metrics_port: 0
+            # [REQUIRED]: string.
+            # type: 'scrape'
+
+            # 1#
+            # [REQUIRED]: boolean.
+            # enabled: true
+            # [REQUIRED]: string.
+            # push_job: ''
+            # [REQUIRED]: number.
+            # push_period_sec: 60
+            # [REQUIRED]: string.
+            # push_url: ''
+            # [REQUIRED]: string.
+            # type: 'push'
+            prometheus:
+                enabled: false
+            # Sentry is a tool for tracking errors (https://sentry.io/welcome/).
+            # Alternative settings:
+            # 0#
+            # attach_stacktrace: true
+            # debug: true
+            # [REQUIRED]: string.
+            # dsn: null
+            # enabled: true
+            # environment: 'dev'
+            # [REQUIRED]: array.
+            # levels: ['panic', 'fatal', 'error', 'error']
+            sentry:
+                enabled: false
+            # [REQUIRED]: number.
+            # Defines a period of time dundergitcall sends status updates to gitcall.
+            # Statuses should not arrive more frequently that this period, except for some special cases.
+            status_update_period_sec: 30
+            # [REQUIRED]: string.
+            # The queue is used by dundergitcall functions to notify GitCall about its status change.
+            status_update_queue: 'dundergitcall-status-update'
+            # [REQUIRED]: object.
+            # Dundergitcall uses this RabbitMQ to send status updates
+            system_amqp:
+                # [REQUIRED]: string.
+                host: '${DUNDERGITCALL_SYSTEM_RABBITMQ_HOST}'
+                # [REQUIRED]: string.
+                password: '${DUNDERGITCALL_SYSTEM_RABBITMQ_PASSWORD}'
+                # [REQUIRED]: [string,number].
+                port: '${int:DUNDERGITCALL_SYSTEM_RABBITMQ_PORT}'
+                # [REQUIRED]: string.
+                username: '${DUNDERGITCALL_SYSTEM_RABBITMQ_USERNAME}'
+                # [REQUIRED]: string.
+                vhost: '${DUNDERGITCALL_SYSTEM_RABBITMQ_VHOST}'
+            # [REQUIRED]: object.
+            # Dundergitcall uses this RabbitMQ to consume usercode tasks
+            task_amqp:
+                # [REQUIRED]: string.
+                host: '${DUNDERGITCALL_TASK_RABBITMQ_HOST}'
+                # [REQUIRED]: string.
+                password: '${DUNDERGITCALL_TASK_RABBITMQ_PASSWORD}'
+                # [REQUIRED]: [string,number].
+                port: '${int:DUNDERGITCALL_TASK_RABBITMQ_PORT}'
+                # [REQUIRED]: number.
+                prefetch: 50
+                # [REQUIRED]: string.
+                username: '${DUNDERGITCALL_TASK_RABBITMQ_USERNAME}'
+                # [REQUIRED]: string.
+                vhost: '${DUNDERGITCALL_TASK_RABBITMQ_VHOST}'
+                # [REQUIRED]: number.
+                workers_num: 50
+            # [REQUIRED]: string.
+            # The directory is used to prepare docker build context, archive it and send to docker daemon.
+            # Gitcall should keep it clean.
+            tmp_dir: '/tmp/gitcall'
+            # [REQUIRED]: object.
+            usercode:
+                # [REQUIRED]: number.
+                # The periods dundergitcall query DNS for service discovery during after startup time.
+                discovery_period_ms: 60000
+                # [REQUIRED]: number.
+                # The period dundergitcall waits before trying to reestablish connection with usercode
+                reconnect_period_ms: 5000
+                # [REQUIRED]: number.
+                # Dundergitcall tries to connect on this port to usercode service
+                service_port: 9999
+                # [REQUIRED]: number.
+                # The periods dundergitcall query DNS for service discovery during startup time.
+                startup_discovery_period_ms: 100
+                # [REQUIRED]: number.
+                # The dundergitcall startup period. During this time some errors are not reported as errors. For example, DNS and service discovery errors.
+                startup_period_ms: 300000
+                # [REQUIRED]: number.
+                # The number of usercode workers. It should be equal to task_amqp.prefetch size.
+                worker_num: 50
+            # [REQUIRED]: string.
+            # Built usercode image is pushed to this registry and, later, run in k8s.
+            usercode_registry: ''
+            # [REQUIRED]: string.
+            usercode_registry_schema: null
+        # Consumers might work with messages encrypted by Enigma services.
+        # To enable encrypted communication:
+        #  * configure this section
+        #  * send encrypted messages with use_enigma=true header.
+        # Alternative settings:
+        # 0#
+        # [REQUIRED]: string.
+        # ca_pem: ''
+        # [REQUIRED]: string.
+        # cert_file: ''
+        # [REQUIRED]: string.
+        # cert_key: ''
+        # enabled: true
+        # [REQUIRED]: string.
+        # enigma_key_manager_host: ''
+        # [REQUIRED]: boolean.
+        # not_secure_tls: false
+        # [REQUIRED]: string.
+        # owner_key_id: ''
+        # [REQUIRED]: number.
+        # version: 1
+        enigma:
+            enabled: false
+        # gops tool https://github.com/google/gops. Useful for profiling CPU and Memory in prod.
+        # Alternative settings:
+        # 1#
+        # enabled: false
+        gopsagent:
+            # [REQUIRED]: boolean.
+            enabled: true
+            # [REQUIRED]: string.
+            host: '127.0.0.1'
+            # [REQUIRED]: number.
+            port: 6527
+        # Expose prometheus metrics. There are two ways promapp can work
+        #  * scrape - the app starts metrics server that prometheus can scrape (preferred)
+        # * push - the app itself sends metrics to prometheus server
+        # Alternative settings:
+        # 0#
+        # [REQUIRED]: boolean.
+        # enabled: true
+        # [REQUIRED]: string.
+        # metrics_host: ''
+        # [REQUIRED]: number.
+        # metrics_port: 0
+        # [REQUIRED]: string.
+        # type: 'scrape'
+
+        # 1#
+        # [REQUIRED]: boolean.
+        # enabled: true
+        # [REQUIRED]: string.
+        # push_job: ''
+        # [REQUIRED]: number.
+        # push_period_sec: 60
+        # [REQUIRED]: string.
+        # push_url: ''
+        # [REQUIRED]: string.
+        # type: 'push'
+        prometheus:
+            enabled: false
+        # Sentry is a tool for tracking errors (https://sentry.io/welcome/).
+        # Alternative settings:
+        # 0#
+        # attach_stacktrace: true
+        # debug: true
+        # [REQUIRED]: string.
+        # dsn: null
+        # enabled: true
+        # environment: 'dev'
+        # [REQUIRED]: array.
+        # levels: ['panic', 'fatal', 'error', 'error']
+        sentry:
+            enabled: false
+        # [REQUIRED]
+        # Describes Pimp service settings.Gitcall uses Pimp service to run\stop functions in k8s.
+        servicespimp:
+            # [REQUIRED]: string.
+            # The token used to access Pimp API
+            access_token: null
+            # [REQUIRED]: string.
+            # The Pimp API endpoint. For example, https://pimp.example.com
+            uri: null
+        # [REQUIRED]
+        # Service stopper is responsible for stopping idling usercode functions.
+        servicestopper:
+            # [REQUIRED]: number.
+            # Periods the stopper performs status check
+            check_period_ms: 60000
+            # [REQUIRED]: number.
+            # How many seconds a usercode can idle before it is stopped
+            maybe_stop_after_idling_sec: 600
+            # [REQUIRED]: number.
+            # The grace period.
+            # At start stopper sends maybe stop status to all subscribers and waits.
+            # At the end, if status still idle, the code is actually stopped (removed from k8s).
+            stop_after_maybe_stop_ms: 15000
+            # [REQUIRED]: number.
+            # Defines how many usercode functions could be stopped simultaneously.
+            worker_pool_size: 10
+        # [REQUIRED]: string.
+        # This is a topic exchange.
+        # It could be used by GitCall clients to consume summarized status updates.
+        status_update_exchange: 'gitcall-v2-status-update'
+        # [REQUIRED]
+        # Status cleaner removes outdated status from database.
+        # If a status in database it is considered when summary status is calculated.
+        statuscleaner:
+            # [REQUIRED]: number.
+            # Periods the cleaner runs delete query
+            outdated_check_period_ms: 20000
+            # [REQUIRED]: number.
+            # Defines how may status could be deleted at a single run.
+            outdated_query_limit: 10000
+            # [REQUIRED]: number.
+            # Statuses older than this value are considered outdated and to be cleaned.
+            outdated_time_ms: 90000

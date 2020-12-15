@@ -1,0 +1,35 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://git.corezoid.com/go-pkgs/promapp/meta.go#ConfigSchema",
+	"description": "Expose prometheus metrics. There are two ways promapp can work\n * scrape - the app starts metrics server that prometheus can scrape (preferred)\n* push - the app itself sends metrics to prometheus server",
+	"oneOf": [
+		{
+			"type": "object",
+			"required": [ "enabled", "type", "metrics_host", "metrics_port"],
+			"properties": {
+				"enabled": { "type": "boolean", "enum": [true], "default": true },
+				"type": { "type": "string", "enum": ["scrape"], "default": "scrape" },
+				"metrics_host": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "" },
+				"metrics_port": { "type":  "number", "min": 1, "max": 65535, "default" : 0 }
+			}
+		},
+		{
+			"type": "object",
+			"required": [ "enabled", "type", "push_url", "push_job", "push_period_sec" ],
+			"properties": {
+				"enabled": { "type": "boolean", "enum": [true], "default": true },
+				"type": { "type": "string", "enum": ["push"], "default": "push" },
+				"push_url": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "" },
+				"push_period_sec": { "type":  "number", "min": 1, "max": 10000, "default": 60 },
+				"push_job": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "" }
+			}
+		},
+		{
+			"type": "object",
+			"cz:default": true,
+			"properties": {
+				"enabled": { "type": "boolean", "enum": [false], "default": false }
+			}
+		}
+	]
+}

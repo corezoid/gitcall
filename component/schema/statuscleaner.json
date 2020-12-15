@@ -1,0 +1,12 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://corezoid.com/schema/gitcall/pkg/statuscleaner/Config.json",
+	"type": "object",
+	"required": ["outdated_time_ms", "outdated_check_period_ms", "outdated_query_limit"],
+	"description": "Status cleaner removes outdated status from database.\nIf a status in database it is considered when summary status is calculated.",
+	"properties": {
+		"outdated_time_ms": { "type": "number", "min": 1, "default": 90000, "description": "Statuses older than this value are considered outdated and to be cleaned." },
+		"outdated_check_period_ms": { "type": "number", "min": 1, "default": 20000, "description": "Periods the cleaner runs delete query" },
+		"outdated_query_limit": { "type": "number", "min": 1, "default": 10000, "description": "Defines how may status could be deleted at a single run." }
+	}
+}

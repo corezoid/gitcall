@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schema.corezoid.com/gitcall/gitcall/helm.json",
+  "type": "object",
+  "required": ["gitcall"],
+  "properties": {
+    "gitcall": {
+      "type": "object",
+      "required": ["helm"],
+      "properties": {
+        "helm": {
+          "type": "object",
+          "required": [],
+          "description": "Describes GitCall settings specific for Helm deployment",
+          "properties": {
+            "min_replicas": { "type": "number", "minimum": 1, "maximum": 1000, "default": 1 },
+            "max_replicas": { "type": "number", "minimum": 1, "maximum": 1000, "default": 1 },
+            "image_pull_policy": { "type": "string", "enum": ["Always"], "default": "Always" },
+            "image_pull_secrets": {
+              "type": "array",
+              "default": [],
+              "items": { "type": "string", "minLength": 1, "maxLength": 10000}
+            },
+            "resources": { "$ref": "https://schema.corezoid.com/packages/kube/container_resources_v1.json" }
+          }
+        }
+      }
+    }
+  }
+}

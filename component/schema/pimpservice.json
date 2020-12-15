@@ -1,0 +1,11 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://git.corezoid.com/gitcall/gitcall/internal/pkg/pimp/Config",
+	"type": "object",
+	"required": ["uri", "access_token"],
+	"description": "Describes Pimp service settings.Gitcall uses Pimp service to run\\stop functions in k8s.",
+	"properties": {
+		"uri": { "type":  "string", "minLength": 1, "maxLength": 10000, "format": "uri", "description": "The Pimp API endpoint. For example, https://pimp.example.com"},
+		"access_token": { "type":  "string", "minLength": 1, "maxLength": 10000, "description": "The token used to access Pimp API"}
+	}
+}

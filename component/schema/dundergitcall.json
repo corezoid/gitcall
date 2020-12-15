@@ -1,0 +1,113 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://corezoid.com/schema/gitcall/internal/app/gitcall/dundergitcall/Config.json",
+	"type": "object",
+	"required": [
+		"global_policy",
+		"usercode_registry_schema", 
+		"usercode_registry", 
+		"docker_daemon", 
+		"tmp_dir", 
+		"status_update_period_sec", 
+		"status_update_queue",
+		"usercode",
+		"task_amqp",
+		"system_amqp"
+	],
+	"properties": {
+		"global_policy": { 
+			"allOf": [
+				{ 
+					"$ref": "https://corezoid.com/schema/gitcall/internal/app/gitcall/dundergitcall/policyservice/policymodel/Policy.json" 
+				},
+				{
+					"type": "object",
+					"required": [
+						"dundergitcall_enabled",
+						"dundergitcall_image",
+						"dundergitcall_request_cpu_milli_cores",
+						"dundergitcall_request_memory_mb",
+						"dundergitcall_limit_cpu_milli_cores",
+						"dundergitcall_limit_memory_mb",
+						"dundergitcall_min_replicas",
+						"dundergitcall_max_replicas",
+						"usercode_proxy_image",
+						"usercode_php_runner_image",
+						"usercode_php_runtime_image",
+						"usercode_js_runner_image",
+						"usercode_request_cpu_milli_cores",
+						"usercode_request_memory_mb",
+						"usercode_limit_cpu_milli_cores",
+						"usercode_limit_memory_mb",
+						"usercode_min_replicas",
+						"usercode_max_replicas",
+						"usercode_scale_cpu_average_utilization",
+						"usercode_scale_prometheus_server"
+					]
+				}
+			]
+		},
+		"tmp_dir": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "/tmp/gitcall", "description": "The directory is used to prepare docker build context, archive it and send to docker daemon.\nGitcall should keep it clean."},
+		"status_update_period_sec": { "type":  "number", "minimum": 0, "default": 30, "description": "Defines a period of time dundergitcall sends status updates to gitcall.\nStatuses should not arrive more frequently that this period, except for some special cases."},
+		"status_update_queue": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "dundergitcall-status-update", "description": "The queue is used by dundergitcall functions to notify GitCall about its status change." },
+		"usercode_registry_schema": { "type":  "string", "minLength": 1, "maxLength": 10000 },
+		"usercode_registry": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "", "description": "Built usercode image is pushed to this registry and, later, run in k8s."},
+		"docker_config": { "$ref": "https://git.corezoid.com/gitcall/gitcall/internal/pkg/dockerconfig/meta.go#Config", "description": "Defines registry credentials. For accessing usercode registry and others." },
+		"docker_daemon": {
+			"type": "object",
+			"required": ["host"],
+			"description": "The docker daemon is used to built usercode images",
+			"properties": {
+				"host": { "type":  "string", "minLength": 1, "maxLength": 10000, "format": "uri", "default": "" }
+			}
+		},
+		"sentry": { "$ref": "https://git.corezoid.com/go-pkgs/sentry/meta.go#ConfigSchema" },
+		"usercode": {
+			"type": "object",
+			"required": [
+				"service_port",
+				"startup_period_ms",
+				"startup_discovery_period_ms",
+				"discovery_period_ms",
+				"reconnect_period_ms",
+				"worker_num"
+			],
+			"properties": {
+				"service_port": { "type":  "number", "minimum": 0, "default": 9999, "description": "Dundergitcall tries to connect on this port to usercode service"},
+				"startup_period_ms": { "type":  "number", "minimum": 1, "default": 300000, "description": "The dundergitcall startup period. During this time some errors are not reported as errors. For example, DNS and service discovery errors."},
+				"startup_discovery_period_ms": { "type":  "number", "minimum": 1, "default": 100, "description": "The periods dundergitcall query DNS for service discovery during startup time." },
+				"discovery_period_ms": { "type":  "number", "minimum": 100, "default": 60000, "description": "The periods dundergitcall query DNS for service discovery during after startup time."},
+				"reconnect_period_ms": { "type":  "number", "minimum": 100, "default": 5000, "description": "The period dundergitcall waits before trying to reestablish connection with usercode"},
+				"worker_num": { "type":  "number", "minimum": 1, "default": 50, "description": "The number of usercode workers. It should be equal to task_amqp.prefetch size." }
+			}
+		},
+		"prometheus": { "$ref": "https://git.corezoid.com/go-pkgs/promapp/meta.go#ConfigSchema" },
+		"task_amqp": {
+			"type": "object",
+			"required": ["host", "port", "username", "password", "vhost", "prefetch", "workers_num"],
+			"description": "Dundergitcall uses this RabbitMQ to consume usercode tasks",
+			"properties": {
+				"host": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "${DUNDERGITCALL_TASK_RABBITMQ_HOST}" },
+				"port": { "type":  ["string", "number"], "default" : 5672, "min": 1, "max": 65535, "default": "${int:DUNDERGITCALL_TASK_RABBITMQ_PORT}"},
+				"username": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "${DUNDERGITCALL_TASK_RABBITMQ_USERNAME}" },
+				"password": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "${DUNDERGITCALL_TASK_RABBITMQ_PASSWORD}" },
+				"vhost": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "${DUNDERGITCALL_TASK_RABBITMQ_VHOST}" },
+				"prefetch": { "type":  "number", "min": 1, "max": 255, "default": 50 },
+				"workers_num": { "type":  "number", "min": 1, "max": 255, "default": 50 }
+			}
+		},
+		"system_amqp": {
+			"type": "object",
+			"required": ["host", "port", "username", "password", "vhost"],
+			"description": "Dundergitcall uses this RabbitMQ to send status updates",
+			"properties": {
+				"host": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "${DUNDERGITCALL_SYSTEM_RABBITMQ_HOST}" },
+				"port": { "type":  ["string", "number"], "default" : 5672, "min": 1, "max": 65535, "default": "${int:DUNDERGITCALL_SYSTEM_RABBITMQ_PORT}"},
+				"username": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "${DUNDERGITCALL_SYSTEM_RABBITMQ_USERNAME}" },
+				"password": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "${DUNDERGITCALL_SYSTEM_RABBITMQ_PASSWORD}" },
+				"vhost": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "${DUNDERGITCALL_SYSTEM_RABBITMQ_VHOST}" }
+			}
+		},
+		"gopsagent": { "$ref": "https://git.corezoid.com/go-pkgs/gopsagent/meta.go#ConfigSchema" }
+	}
+}

@@ -1,0 +1,11 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://corezoid.com/schema/gitcall/app/gitcall/dundergitcall/consumer/statusupdate/Config.json",
+	"type": "object",
+	"required": ["queue", "prefetch"],
+	"description": "The consumer processes status updates sent by dundergitcal services",
+	"properties": {
+		"queue": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "dundergitcall-status-update", "description": "The queue to consume messages from" },
+		"prefetch": { "type":  "number", "min": 1, "max": 10000, "default": 20, "description": "Defines how many statuses could be processed simultaneously", "description": "Defines how many statuses could be processed simultaneously"}
+	}
+}
