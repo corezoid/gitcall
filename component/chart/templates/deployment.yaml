@@ -35,13 +35,13 @@ spec:
       terminationGracePeriodSeconds: 40
       initContainers:
         - name: init-wait-postgresql
-          image: alpine
+          image: docker-hub.middleware.biz/public/alpine:3.12
           command: ["sh", "-c", "until nc -zvw1 ${GITCALL_POSTGRESQL_HOST} ${GITCALL_POSTGRESQL_PORT}; do echo waiting for dependencies; sleep 2; done;"]
           env:
             # todo secretalreadyexist true
             {{- tpl ($.Files.Get ".helm.env.tpl") $tplVals | indent 12 }}
         - name: init-wait-rabbitmq
-          image: alpine
+          image: docker-hub.middleware.biz/public/alpine:3.12
           command: ["sh", "-c", "until nc -zvw1 ${GITCALL_RABBITMQ_HOST} ${GITCALL_RABBITMQ_PORT}; do echo waiting for dependencies; sleep 2; done;"]
           env:
             # todo secretalreadyexist true
