@@ -196,6 +196,34 @@ gitcall:
                 prefetch: 2
                 # [REQUIRED]: string.
                 queue: 'gitcall-v2-setpolicy'
+            # [REQUIRED]
+            # The consumer sends public ssh key info in reply
+            getsshkey_consumer:
+                # [REQUIRED]: string.
+                # The queue is bound to this exchange
+                exchange: 'gitcall-v2'
+                # [REQUIRED]: number.
+                # Defines number of consumer workers started internally. Should be equal to prefetch size.
+                num_consumers: 2
+                # [REQUIRED]: number.
+                # Defines how many statuses could be processed simultaneously
+                prefetch: 2
+                # [REQUIRED]: string.
+                queue: 'gitcall-v2-getsshkey'
+            # [REQUIRED]
+            # The consumer sends new public ssh key info in reply
+            refreshsshkey_consumer:
+                # [REQUIRED]: string.
+                # The queue is bound to this exchange
+                exchange: 'gitcall-v2'
+                # [REQUIRED]: number.
+                # Defines number of consumer workers started internally. Should be equal to prefetch size.
+                num_consumers: 2
+                # [REQUIRED]: number.
+                # Defines how many statuses could be processed simultaneously
+                prefetch: 2
+                # [REQUIRED]: string.
+                queue: 'gitcall-v2-refreshsshkey'
         # [REQUIRED]: object.
         db:
             # [REQUIRED]: string.
@@ -209,11 +237,24 @@ gitcall:
                 # password: null
                 # username: null
                 auths: {}
-            # [REQUIRED]: object.
+            # [REQUIRED]
             # The docker daemon is used to built usercode images
+            # Alternative settings:
+            # 1#
+            # The docker daemon is used to built usercode images
+            # [REQUIRED]: string.
+            # discovery: 'dns'
+            # [REQUIRED]: string.
+            # Docker daemons domain name
+            # host: ''
+            # [REQUIRED]: number.
+            # Docker daemons port
+            # port: 2375
             docker_daemon:
                 # [REQUIRED]: string.
-                host: ''
+                discovery: 'none'
+                # [REQUIRED]: array.
+                hosts: ['tcp://127.0.0.1:2375']
             # [REQUIRED]
             global_policy:
                 # Allows enable\disable dundergitcall feature. All dundergitcall consumer would return error if disabled.
@@ -237,6 +278,8 @@ gitcall:
                 dundergitcall_request_memory_mb: 50
                 # The dundergitcall compares usercode reply size with the limit. Rejects everything that is bigger it. In bytes.
                 usercode_body_size_limit_bytes: 128000
+                # The runner image is used on codebuild stage. The runner is injected to usercode image and set as image entrypoint
+                usercode_java_runner_image: 'docker-hub.middleware.biz/public/gitcall/java-runner:latest'
                 # The runner image is used on codebuild stage. The runner is injected to usercode image and set as image entrypoint
                 usercode_js_runner_image: 'docker-hub.middleware.biz/public/gitcall/js-runner:latest'
                 # The limit of CPU usercode has. In millicors (1 CPU = 1000)
@@ -282,6 +325,10 @@ gitcall:
                 host: '127.0.0.1'
                 # [REQUIRED]: number.
                 port: 6527
+            logger:
+                format: 'text'
+                level: 'debug'
+                output: 'stderr'
             # Expose prometheus metrics. There are two ways promapp can work
             #  * scrape - the app starts metrics server that prometheus can scrape (preferred)
             # * push - the app itself sends metrics to prometheus server
@@ -449,6 +496,38 @@ gitcall:
         # type: 'push'
         prometheus:
             enabled: false
+        # REST API
+        # Alternative settings:
+        # 1#
+        # enabled: false
+        restapi:
+            auth:
+                # Defines a list of auth tokens.
+                # Property patterns:
+                # .+:
+                # ''
+                simple: {}
+                single_account:
+                    # [REQUIRED]: string.
+                    client_id: null
+                    # [REQUIRED]: string.
+                    client_secret: null
+                    # [REQUIRED]: string.
+                    http_host: null
+                    # [REQUIRED]: array.
+                    scopes: []
+                    # [REQUIRED]: number.
+                    token_cache_time_sec: 2
+            # [REQUIRED]: boolean.
+            enabled: true
+            # [REQUIRED]: string.
+            host: '127.0.0.1'
+            # [REQUIRED]: array.
+            listen_to: ['http']
+            # [REQUIRED]: [string,number].
+            rest_port: 8080
+            # [REQUIRED]: [string,number].
+            wamp_port: 9000
         # Sentry is a tool for tracking errors (https://sentry.io/welcome/).
         # Alternative settings:
         # 0#
@@ -505,12 +584,16 @@ gitcall:
             # [REQUIRED]: number.
             # Statuses older than this value are considered outdated and to be cleaned.
             outdated_time_ms: 90000
+    logger:
+        format: 'text'
+        level: 'debug'
+        output: 'stderr'
 release:
     name: 'gitcall_release'
     require:
         gitcall: 'aVersion'
-        postgresql: 'develop'
-        rabbitmq: 'develop'
+        postgresql_credentials: 'main'
+        rabbitmq_credentials: 'main'
     repositories:
         gitcall:
             source: 'local'

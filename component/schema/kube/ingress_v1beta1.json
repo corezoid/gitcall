@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://schema.corezoid.com/packages/kube/ingress_v1.json",
+  "$id": "https://schema.corezoid.com/packages/kube/ingress_v1beta1.json",
   "oneOf": [
     {
       "type": "object",
@@ -24,25 +24,11 @@
                 "minLength": 1,
                 "items": {
                   "type": "object",
-                  "required": ["path", "pathType", "service"],
+                  "required": ["path", "service_name", "service_port"],
                   "properties": {
                     "path": { "type": "string", "minLength": 1, "maxLength": 512, "default": "" },
-                    "pathType": { "type": "string", "minLength": 1, "maxLength": 512, "default": "Prefix" },
-                    "service": { 
-                      "type": "object",
-                      "required": ["name", "port"],
-                      "properties": {
-                        "name": { "type": "string", "minLength": 1, "maxLength": 512, "default": "" },
-                        "port": {
-                          "type": "object",
-                          "required": ["number"],
-                          "properties": {
-                            "name": { "type": "string", "minLength": 1, "maxLength": 512, "default": "" },
-                            "number": { "type":  "number", "min": 1, "max": 65535 } 
-                          }
-                        }
-                      }
-                    }
+                    "service_name": { "type": "string", "minLength": 1, "maxLength": 512, "default": "" },
+                    "service_port": { "type":  "number", "min": 1, "max": 65535 }
                   }
                 }
               }

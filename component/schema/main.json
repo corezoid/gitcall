@@ -8,7 +8,8 @@
       "type": "object",
       "required": ["config"],
       "properties": {
-        "config": { "$ref": "https://corezoid.com/schema/gitcall/internal/app/gitcall/Config.json" }
+        "config": { "$ref": "https://corezoid.com/schema/gitcall/internal/app/gitcall/Config.json" },
+        "logger": { "$ref": "https://schema.corezoid.com/gitcall/gitcall/logger.json" }
       }
     }
   }

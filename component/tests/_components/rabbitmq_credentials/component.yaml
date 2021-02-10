@@ -1,4 +1,4 @@
-component_name: postgresql
+component_name: rabbitmq_credentials
 
 helm:
   enabled: true

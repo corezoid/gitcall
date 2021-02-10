@@ -142,6 +142,20 @@
 					"properties": {
 						"removepolicy_consumer": { "$ref": "https://corezoid.com/schema/gitcall/app/gitcall/dundergitcall/consumer/setpolicy/Config.json" }
 					}
+				},
+				{
+					"type": "object",
+					"required": ["getsshkey_consumer"],
+					"properties": {
+						"getsshkey_consumer": { "$ref": "https://corezoid.com/schema/gitcall/app/gitcall/dundergitcall/consumer/getsshkey/Config.json" }
+					}
+				},
+				{
+					"type": "object",
+					"required": ["refreshsshkey_consumer"],
+					"properties": {
+						"refreshsshkey_consumer": { "$ref": "https://corezoid.com/schema/gitcall/app/gitcall/dundergitcall/consumer/refreshsshkey/Config.json" }
+					}
 				}
 			]
 		},
@@ -151,6 +165,7 @@
 		"servicestopper": { "$ref": "https://corezoid.com/schema/gitcall/pkg/servicestopper/Config.json" },
 		"servicespimp": { "$ref": "https://git.corezoid.com/gitcall/gitcall/internal/pkg/pimp/Config" },
 		"enigma": { "$ref": "https://corezoid.com/schema/gitcall/internal/pkg/cipher/EnigmaConfig.json" },
-		"gopsagent": { "$ref": "https://git.corezoid.com/go-pkgs/gopsagent/meta.go#ConfigSchema" }
+		"gopsagent": { "$ref": "https://git.corezoid.com/go-pkgs/gopsagent/meta.go#ConfigSchema" },
+		"restapi": { "$ref": "https://git.corezoid.com/gitcall/gitcall/internal/app/gitcall/dundergitcall/restapi/meta.go#ConfigSchema" }
 	}
 }

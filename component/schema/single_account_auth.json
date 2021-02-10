@@ -1,0 +1,25 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"$id" : "https://corezoid.com/schema/gitcall/internal/app/gitcall/dundergitcall/restapi/auth/saccount/meta.go#SchemaConfig",
+	"type": "object",
+	"required": [
+		"client_id",
+		"client_secret",
+		"http_host",
+		"scopes",
+		"token_cache_time_sec"
+	],
+	"properties": {
+		"client_id": { "type":  "string", "minLength": 1, "maxLength": 10000 },
+		"client_secret": { "type":  "string", "minLength": 1, "maxLength": 10000 },
+		"http_host": { "type":  "string", "minLength": 1, "maxLength": 10000, "format": "uri" },
+		"scopes": { 
+			"type":  "array",
+			"items": {
+				"type": "string"
+			},
+			"minItems": 1
+		},
+		"token_cache_time_sec": { "type": "number", "min": 1, "default": 2 }
+	}
+}

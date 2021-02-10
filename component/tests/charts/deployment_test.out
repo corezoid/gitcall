@@ -19,7 +19,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: a08cfc4022a5954027e1378a3599b92d2bc9daafd28f7ebb0171a71f1b4b457c
+        checksum/config: 6fb2035cc982da86f13275f78bc02c69179e52e0139382f819177d8900ac8e15
         checksum/env: ec15e7084e8782cb71ce567f5bc5bd5798b393e5afca88de52f6a39a0157ee2e
         prometheus.io/path: /metrics
         prometheus.io/port: "9100"
@@ -122,7 +122,11 @@ spec:
           imagePullPolicy: "Always"
           image: docker-hub.middleware.biz/gitcall/gitcall:aVersion
           command: ["/gitcall/gitcall"]
-          args: ["--config", "/gitcall/gitcall.json"]
+          args:
+            - --config=/gitcall/gitcall.json
+            - --logger=stdout
+            - --logger-level=info
+            - --logger-format=json
           env:
             - name: GOPS_CONFIG_DIR
               value: /tmp            

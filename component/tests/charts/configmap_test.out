@@ -50,6 +50,18 @@ data:
           "prefetch": 20,
           "queue": "gitcall-v2-getservice"
         },
+        "getsshkey_consumer": {
+          "exchange": "gitcall-v2",
+          "num_consumers": 2,
+          "prefetch": 2,
+          "queue": "gitcall-v2-getsshkey"
+        },
+        "refreshsshkey_consumer": {
+          "exchange": "gitcall-v2",
+          "num_consumers": 2,
+          "prefetch": 2,
+          "queue": "gitcall-v2-refreshsshkey"
+        },
         "removepolicy_consumer": {
           "exchange": "gitcall-v2",
           "num_consumers": 2,
@@ -109,7 +121,9 @@ data:
           "auths": {}
         },
         "docker_daemon": {
-          "host": "http://docker.host"
+          "discovery": "dns",
+          "host": "service-host",
+          "port": 2375
         },
         "global_policy": {
           "dundergitcall_enabled": true,
@@ -121,6 +135,7 @@ data:
           "dundergitcall_request_cpu_milli_cores": 100,
           "dundergitcall_request_memory_mb": 50,
           "usercode_body_size_limit_bytes": 128000,
+          "usercode_java_runner_image": "docker-hub.middleware.biz/public/gitcall/java-runner:latest",
           "usercode_js_runner_image": "docker-hub.middleware.biz/public/gitcall/js-runner:latest",
           "usercode_limit_cpu_milli_cores": 100,
           "usercode_limit_memory_mb": 50,
@@ -183,6 +198,26 @@ data:
       },
       "prometheus": {
         "enabled": false
+      },
+      "restapi": {
+        "auth": {
+          "single_account": {
+            "client_id": "client-id",
+            "client_secret": "client-secret",
+            "http_host": "http://127.0.0.1",
+            "scopes": [
+              "scope"
+            ],
+            "token_cache_time_sec": 2
+          }
+        },
+        "enabled": true,
+        "host": "127.0.0.1",
+        "listen_to": [
+          "http"
+        ],
+        "rest_port": 8080,
+        "wamp_port": 9000
       },
       "sentry": {
         "enabled": false

@@ -1,0 +1,9 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"$id" : "https://corezoid.com/schema/gitcall/internal/app/gitcall/dundergitcall/restapi/auth/simpleauth/meta.go#SchemaConfig",
+	"type": "object",
+	"description": "Defines a list of auth tokens.",
+	"patternProperties": {
+		".+": { "type": "string", "minLength": 32, "maxLength": 1000, "default": "" }
+	}
+}

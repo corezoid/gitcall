@@ -4,7 +4,7 @@
   "type": "object",
   "required": ["kube"],
   "properties": {
-    "kube_goodies": {
+    "kube": {
       "type": "object",
       "properties": {
         "dockerconfig_secrets": { "$ref": "https://schema.corezoid.com/packages/kube/dockerconfig_secrets_v1.json" },

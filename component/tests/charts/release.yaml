@@ -137,6 +137,32 @@ gitcall:
                 # [REQUIRED]: number.
                 queue: 'gitcall-v2-setpolicy'
                 # [REQUIRED]: string.
+            getsshkey_consumer:
+                # [REQUIRED]: string.
+                # The queue is bound to this exchange
+                exchange: 'gitcall-v2'
+                # [REQUIRED]: number.
+                # Defines number of consumer workers started internally. Should be equal to prefetch size.
+                num_consumers: 2
+                # [REQUIRED]: number.
+                # Defines how many statuses could be processed simultaneously
+                prefetch: 2
+                # [REQUIRED]: string.
+                queue: 'gitcall-v2-getsshkey'
+                # [REQUIRED]
+                # The consumer sends new public ssh key info in reply
+            refreshsshkey_consumer:
+                # [REQUIRED]: string.
+                # The queue is bound to this exchange
+                exchange: 'gitcall-v2'
+                # [REQUIRED]: number.
+                # Defines number of consumer workers started internally. Should be equal to prefetch size.
+                num_consumers: 2
+                # [REQUIRED]: number.
+                # Defines how many statuses could be processed simultaneously
+                prefetch: 2
+                # [REQUIRED]: string.
+                queue: 'gitcall-v2-refreshsshkey'
         db:
             # [REQUIRED]: object.
             dsn: 'postgres://${GITCALL_POSTGRESQL_USERNAME}:${GITCALL_POSTGRESQL_PASSWORD}@${GITCALL_POSTGRESQL_HOST}:${GITCALL_POSTGRESQL_PORT}/gitcall?sslmode=disable&binary_parameters=yes'
@@ -154,9 +180,9 @@ gitcall:
             docker_config:
                 auths: {}
             docker_daemon:
-                # [REQUIRED]: object.
-                host: 'http://docker.host'
-                # [REQUIRED]: string.
+                discovery: 'dns'
+                host: 'service-host'
+                port: 2375
             global_policy:
                 # [REQUIRED]: undefined.
                 dundergitcall_enabled: true
@@ -178,6 +204,7 @@ gitcall:
                 usercode_proxy_image: 'docker-hub.middleware.biz/gitcall/usercode-proxy:latest'
                 usercode_python_runner_image: 'docker-hub.middleware.biz/public/gitcall/python-runner:latest'
                 usercode_python_runtime_image: 'python:3'
+                usercode_java_runner_image: 'docker-hub.middleware.biz/public/gitcall/java-runner:latest'
                 usercode_request_cpu_milli_cores: 100
                 usercode_request_memory_mb: 50
                 usercode_scale_cpu_average_utilization: 80
@@ -272,6 +299,29 @@ gitcall:
             # [REQUIRED]: number.
             outdated_time_ms: 90000
             # [REQUIRED]: number.
+        restapi:
+            # [REQUIRED]: boolean.
+            enabled: true
+            # [REQUIRED]: string.
+            host: '127.0.0.1'
+            # [REQUIRED]: array.
+            listen_to: [ 'http' ]
+            # [REQUIRED]: [string,number].
+            rest_port: 8080
+            # [REQUIRED]: [string,number].
+            wamp_port: 9000
+            auth:
+                single_account:
+                    # [REQUIRED]: string.
+                    client_id: "client-id"
+                    # [REQUIRED]: string.
+                    client_secret: "client-secret"
+                    # [REQUIRED]: string.
+                    http_host: "http://127.0.0.1"
+                    # [REQUIRED]: array.
+                    scopes: [ "scope" ]
+                    # [REQUIRED]: number.
+                    token_cache_time_sec: 2
     helm:
         # [REQUIRED]: object.
         image_pull_policy: 'Always'
@@ -285,14 +335,18 @@ gitcall:
             requests:
                 cpu: 300m
                 memory: 400Mi
-postgresql:
+    logger:
+        format: 'json'
+        level: 'info'
+        output: 'stdout'
+postgresql_credentials:
     # [REQUIRED]: object.
     main:
         password: 'pass'
         host: 'postgresql.host'
         port: 5432
         username: 'postgres'
-rabbitmq:
+rabbitmq_credentials:
     # [REQUIRED]: object.
     main:
         host: "rabbitmq.host"
@@ -313,15 +367,15 @@ release:
         deploy: ["gitcall"]
     require:
         gitcall: 'aVersion'
-        postgresql: 'aVersion'
-        rabbitmq: 'aVersion'
+        postgresql_credentials: 'aVersion'
+        rabbitmq_credentials: 'aVersion'
     repositories:
         gitcall:
             source: 'local'
             local: { path: '../../' }
-        postgresql:
+        postgresql_credentials:
             source: 'local'
-            local: { path: '../_components/postgresql' }
-        rabbitmq:
+            local: { path: '../_components/postgresql_credentials' }
+        rabbitmq_credentials:
             source: 'local'
-            local: { path: '../_components/rabbitmq' }
+            local: { path: '../_components/rabbitmq_credentials' }

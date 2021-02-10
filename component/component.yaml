@@ -1,9 +1,9 @@
 component_name: gitcall
 require:
-  postgresql: "develop"
-  rabbitmq: "develop"
+  postgresql_credentials: "main"
+  rabbitmq_credentials: "main"
 include:
-  kube: 7d2612ac # 1.0-dev
+  kube: d2721333 # main
 helm:
   enabled: true
   app: gitcall

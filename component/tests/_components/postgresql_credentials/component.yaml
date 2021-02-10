@@ -1,0 +1,5 @@
+component_name: postgresql_credentials
+
+helm:
+  enabled: true
+  global: true

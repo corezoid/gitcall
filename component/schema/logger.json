@@ -1,0 +1,10 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schema.corezoid.com/gitcall/gitcall/logger.json",
+  "type": "object",
+  "properties": {
+    "output": { "type": "string", "default": "stderr"},
+    "level": { "type": "string", "enum": ["trace", "debug", "info", "warning", "error", "fatal", "panic"], "default": "debug"},
+    "format": { "type": "string", "enum": ["text", "json"], "default": "text"}
+  }
+}

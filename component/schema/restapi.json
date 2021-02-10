@@ -1,0 +1,39 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://git.corezoid.com/gitcall/gitcall/internal/app/gitcall/dundergitcall/restapi/meta.go#ConfigSchema",
+	"description": "REST API",
+	"oneOf": [
+		{
+			"cz:default": true,
+			"type": "object",
+			"required": [ "enabled", "host", "rest_port", "wamp_port", "listen_to" ],
+			"properties": {
+				"enabled": { "type": "boolean", "enum": [true], "default": true },
+				"host": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "127.0.0.1" },
+				"rest_port": { "type":  ["string", "number"], "min": 1, "max": 65535, "default": 8080 },
+				"wamp_port": { "type":  ["string", "number"], "min": 1, "max": 65535, "default": 9000 },
+				"listen_to": {
+					"type": "array",
+					"items": {
+						"type": "string",
+						"enum": [ "http", "https" ]
+					},
+					"default": [ "http" ]
+				},
+				"auth": {
+					"type": "object",
+					"properties": {
+						"simple": { "$ref": "https://corezoid.com/schema/gitcall/internal/app/gitcall/dundergitcall/restapi/auth/simpleauth/meta.go#SchemaConfig" },
+						"single_account": { "$ref": "https://corezoid.com/schema/gitcall/internal/app/gitcall/dundergitcall/restapi/auth/saccount/meta.go#SchemaConfig" }
+					}
+				}
+			}
+		},
+		{
+			"type": "object",
+			"properties": {
+				"enabled": { "type": "boolean", "enum": [false], "default": false }
+			}
+		}
+	]
+}
