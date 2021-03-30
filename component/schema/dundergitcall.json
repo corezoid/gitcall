@@ -132,6 +132,13 @@
 			}
 		},
 		"gopsagent": { "$ref": "https://git.corezoid.com/go-pkgs/gopsagent/meta.go#ConfigSchema" },
+		"k8s" : {
+			"type": "object",
+			"properties": {
+				"single_namespace": { "type":  "string", "minLength": 0, "maxLength": 253, "default": "", "description": "If set deploy all usercodes to this single namespace. If empty deploy usercodes to {owner_id} namespaces" },
+				"network_policy": { "type": "boolean", "default": true, "description": "If enabled, it deploys code with some network policies. Codes can access Internet. Cannot access each other, other k8s services, and internal sub network. Require a network policy plugin (like Calico) to work. If disabled, all codes can access each other, and what ever k8s allows." }
+			}
+		},
 		"logger": {
 			"type": "object",
 			"properties": {

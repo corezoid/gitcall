@@ -324,6 +324,11 @@ gitcall:
                 host: '127.0.0.1'
                 # [REQUIRED]: number.
                 port: 6527
+            k8s:
+                # If enabled, it deploys code with some network policies. Codes can access Internet. Cannot access each other, other k8s services, and internal sub network. Require a network policy plugin (like Calico) to work. If disabled, all codes can access each other, and what ever k8s allows.
+                network_policy: true
+                # If set deploy all usercodes to this single namespace. If empty deploy usercodes to {owner_id} namespaces
+                single_namespace: ''
             logger:
                 format: 'text'
                 level: 'debug'
