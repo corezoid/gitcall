@@ -10,7 +10,8 @@
 				"enabled": { "type": "boolean", "enum": [true], "default": true },
 				"type": { "type": "string", "enum": ["scrape"], "default": "scrape" },
 				"metrics_host": { "type":  "string", "minLength": 1, "maxLength": 10000, "default": "" },
-				"metrics_port": { "type":  "number", "min": 1, "max": 65535, "default" : 0 }
+				"metrics_port": { "type":  "number", "min": 1, "max": 65535, "default" : 0 },
+				"not_scraped_check_period_sec": { "type":  "number", "min": 0, "max": 65535, "default": 120 }
 			}
 		},
 		{

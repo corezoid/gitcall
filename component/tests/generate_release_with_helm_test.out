@@ -344,6 +344,7 @@ gitcall:
             # metrics_host: ''
             # [REQUIRED]: number.
             # metrics_port: 0
+            # not_scraped_check_period_sec: 120
             # [REQUIRED]: string.
             # type: 'scrape'
 
@@ -484,6 +485,7 @@ gitcall:
         # metrics_host: ''
         # [REQUIRED]: number.
         # metrics_port: 0
+        # not_scraped_check_period_sec: 120
         # [REQUIRED]: string.
         # type: 'scrape'
 
