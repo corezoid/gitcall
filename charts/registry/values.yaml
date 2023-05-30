@@ -1,0 +1,41 @@
+image:
+  repository: docker-hub.middleware.biz/hub.docker.com/library/registry
+  tag: ""
+  pullPolicy: IfNotPresent
+  pullSecrets: { }
+
+storage:
+  provider: filesystem
+  filesystem:
+    size: 10Gi
+    storageClass: "-"
+    accessMode: ReadWriteOnce
+  s3:
+    region: eu-central-1
+    regionEndpoint: ""
+    bucket: ChangeMe
+    rootDirectory: ""
+    accessKey: ChangeMe
+    secretKey: ChangeMe
+
+ingress:
+  className: nginx
+
+configData:
+  version: 0.1
+  log:
+    fields:
+      service: registry
+  storage:
+    cache:
+      blobdescriptor: inmemory
+  http:
+    host: https://{{ .Values.global.gitcall.registry.host }}
+    addr: :5000
+    headers:
+      X-Content-Type-Options: [ nosniff ]
+  health:
+    storagedriver:
+      enabled: true
+      interval: 10s
+      threshold: 3

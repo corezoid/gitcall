@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://git.corezoid.com/gitcall/gitcall-helm/-/raw/master/charts/docker-registry/values.schema.json",
+  "title": "Docker Registry",
+  "description": "Docker Registry Helm chart values.yaml schema",
+  "type": "object",
+  "required": ["image", "storage", "ingress", "configData"],
+  "properties": {
+    "image": {
+      "type": "object",
+      "required": ["repository", "pullPolicy"],
+      "properties": {
+        "repository": {"type": "string", "minLength": 1},
+        "tag": {"type": "string"},
+        "pullPolicy": {"enum": ["IfNotPresent", "Always", "Never"]},
+        "pullSecrets": {
+          "type": "object"
+        }
+      }
+    },
+    "storage": {
+      "type": "object",
+      "required": ["provider"],
+      "properties": {
+        "provider": {"enum": ["filesystem", "s3"]},
+        "filesystem": {
+          "type": "object",
+          "required": ["size", "accessMode", "storageClass"],
+          "properties": {
+            "size": {
+              "oneOf": [
+                {"type": "number", "minimum": 1},
+                {"type": "string", "pattern": "^\\d+[EPTGMk]i?$"}
+              ]
+            },
+            "accessMode": {"enum": ["ReadWriteOnce"]},
+            "storageClass": {"type": "string", "minLength": 1}
+          }
+        },
+        "s3": {
+          "type": "object",
+          "required": ["region", "bucket", "accessKey", "secretKey"],
+          "properties": {
+            "region": {"type": "string", "minLength": 1},
+            "regionEndpoint": {"type": "string"},
+            "bucket": {"type": "string", "minLength": 1},
+            "rootDirectory": {"type": "string"},
+            "accessKey": {"type": "string", "minLength": 1},
+            "secretKey": {"type": "string", "minLength": 1}
+          }
+        }
+      }
+    },
+    "ingress": {
+      "type": "object",
+      "required": ["className"],
+      "properties": {
+        "className": {"type": "string", "minLength": 1}
+      }
+    },
+    "configData": {
+      "type": "object"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+serviceName: "gitcall"
+image:
+  repository: docker-hub.middleware.biz/hub.docker.com/library/docker
+  pullPolicy: IfNotPresent
+  tag: ""
+
+replicaCount: 2
+
+autoscaling:
+  enabled: false
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 50
+
+resources: { }
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi

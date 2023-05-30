@@ -1,0 +1,120 @@
+global:
+  # second level domain only! / core domain (example: simulator.loc)
+  domain: "dev-devops.corezoid.com"
+  imageRegistry: docker-hub.middleware.biz
+  repotype: "public"
+  env: prod
+#  imagePullSecrets:
+#    name: corezoid-secret
+  imageInit:
+    repository: docker-hub.middleware.biz/public/alpine
+    pullPolicy: IfNotPresent
+    tag: 3.17
+  alpineImage:
+    registry: docker-hub.middleware.biz
+    repository: alpine
+    tag: 3.17
+  serviceMonitor:
+    enabled: false
+  deploymentStrategy:
+    type: RollingUpdate
+
+  # Ingress annotations
+  ingress:
+    className: "private-nginx"
+
+  db:
+    internal: false
+    ## secret configuration for postgresql
+    ## pvc name
+    persistantVolumeClaimName: "postgresql-pvc"
+    secret:
+      ## true - secret will be created automaticaly with provided values
+      ## false - secret should be created manualy
+      create: true
+      ## secret name
+      name: "postgresql-secret"
+      ## for init db and roles dbsuperuser and dbuser cannot be changed (because used as plain text in sql)
+      dbsuperuser: "dbsuperuser"
+      ## password - for dbsuperuser
+      dbsuperuserpwd: "dbsuperuserpwd"
+      data:
+        dbhost: "DBHOST"
+        dbport: "5432"
+        dbuser: "dbuser"
+        dbpwd: "dbpwd"
+
+  #######  RabbitMQ  ########
+  ## Supported version  3.9.*
+  mq:
+    internal: false
+    ## secret configuration for rabbitmq
+    secret:
+      ## true - secret will be created automatically with provided values
+      ## false - secret should be created manually
+      create: true
+      name: "rabbitmq-secret"
+      data:
+        host: "RMQHOST"
+        port: "5672"
+        vhost: "/conveyor"
+        username: "RMQ_USER"
+        password: "RMQ_PASSWORD"
+    # vm_memory_high_watermark.relative
+    memoryHighWatermark: 0.3
+
+  gitcall:
+    # true or false
+    enabled: true
+    tag: "2.6.0"
+    migration_tag: "2.5.1"
+    registry:
+      # If use specific domain for GitCall registry set `host` parameter
+      # host: "gitcall.reiestry.loc"
+      # else set `subDomain` parameter, will be subDomain.domain
+      subDomain: "gitcall"
+      tls: true
+      host: "gitcall.dev-devops.corezoid.com" # set for your registry domain
+    secret:
+      username: "k8s"
+      password: "GHbJS2Pgxa2vDBgRK4alsca5KGN4s2Jv"
+    serviceName: "gitcall"
+    mq_vhost: "/conveyor"
+    dunder_mq_vhost: "/conveyor"
+    db_name: "gitcall"
+    pimp:
+      tag: "1.2.0"
+    affinity: {}
+    #    # hard AZ-based affinity
+    #      podAntiAffinity:
+    #        requiredDuringSchedulingIgnoredDuringExecution:
+    #          - labelSelector:
+    #              matchExpressions:
+    #              - key: tier
+    #                operator: In
+    #                values:
+    #                  - gitcall
+    #            topologyKey: failure-domain.beta.kubernetes.io/zone
+    #    # soft AZ-based affinity
+    #      podAntiAffinity:
+    #        preferredDuringSchedulingIgnoredDuringExecution:
+    #          - labelSelector:
+    #              matchExpressions:
+    #                - key: tier
+    #                  operator: In
+    #                  values:
+    #                    - gitcall
+    #            topologyKey: failure-domain.beta.kubernetes.io/zone
+registry:
+  storage:
+    provider: "filesystem"  # can be "filesystem" or "s3"
+    filesystem:
+      size: "10Gi"
+      storageClass: "gp2"
+#    s3:
+#      region: "eu-west-1"
+#      regionEndpoint: ""
+#      bucket: "gitcall-registry"
+#      rootDirectory: ""
+#      accessKey: ""
+#      secretKey: ""

@@ -1,0 +1,43 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: registry-ingress
+  labels:
+    {{- include "registry.labels" . | nindent 4 }}
+  annotations:
+    # nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.org/basic-auth-secret: {{ include "common.Name" . }}-secret
+    nginx.org/basic-auth-realm: "Authentication Required - Docker-Registry"
+
+    nginx.ingress.kubernetes.io/proxy-pass-host-header: "true"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+    nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+
+    nginx.org/client-max-body-size: "100000m"
+
+    nginx.ingress.kubernetes.io/limit-connections: "1000"
+
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+
+    # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    # nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+
+    # nginx.ingress.kubernetes.io/configuration-snippet: |
+    #   proxy_set_header X-Forwarded-Proto https;
+
+spec:
+  ingressClassName: {{ include "ingressClassName" . }}
+  rules:
+    - host: {{ include "registry.host" . }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: registry-service
+                port:
+                  number: 5000

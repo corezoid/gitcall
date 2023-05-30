@@ -1,0 +1,51 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: pimp-clusterrole-{{ .Values.global.env | default "prod" }}
+  labels:
+    {{- include "pimp.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [ "" ]
+    resources: [ "namespaces" ]
+    verbs: [ "get", "list", "create", "delete", "update" ]
+  - apiGroups: [ "" ]
+    resources: [ "pods" ]
+    verbs: [ "get", "list", "create", "delete", "update" ]
+  - apiGroups: [ "extensions", "apps" ]
+    resources: [ "deployments" ]
+    verbs: [ "get", "list", "create", "delete", "update" ]
+  - apiGroups: [ "" ]
+    resources: [ "services" ]
+    verbs: [ "get", "create", "delete", "update" ]
+  - apiGroups: [ "autoscaling" ]
+    resources: [ "horizontalpodautoscalers" ]
+    verbs: [ "get", "create", "delete", "update" ]
+  - apiGroups: [ "" ]
+    resources: [ "configmaps" ]
+    verbs: [ "get", "list", "create", "delete", "update", "patch" ]
+  - apiGroups: [ "" ]
+    resources: [ "secrets" ]
+    verbs: [ "get", "list", "create", "delete", "update" ]
+{{- if .Values.networkPolicy.enabled }}
+  - apiGroups: [ "crd.projectcalico.org" ]
+    resources: [ "networkpolicies" ]
+    verbs: [ "get", "list", "create", "delete", "patch" ]
+{{- end }}
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: pimp-clusterrole-bind-{{ .Values.global.env | default "prod" }}
+  labels:
+    {{- include "pimp.labels" . | nindent 4 }}
+subjects:
+  - kind: "ServiceAccount"
+    name: pimp-serviceaccount
+    namespace: {{ .Release.Namespace }}
+    apiGroup: ""
+roleRef:
+  kind: "ClusterRole"
+  name: pimp-clusterrole-{{ .Values.global.env | default "prod" }}
+  apiGroup: ""

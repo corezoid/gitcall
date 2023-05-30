@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "common.Name" . }}-deployment
+  labels:
+    {{- include "pimp.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "pimp.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: {{ include "common.spec.strategy.type" . }}
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      labels:
+        {{- include "pimp.labels" . | nindent 8 }}
+        http: "true"
+    spec:
+      {{- include "gitcall.affinity" . }}
+      terminationGracePeriodSeconds: 240 # there is apply/delete buffer, we should wait till it is empty.
+      serviceAccountName: pimp-serviceaccount
+      {{- include "common.imagePullSecrets" . | nindent 6 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ include "gitcall.pimp.imageUrl" . }}
+          imagePullPolicy: {{ include "gitcall.pimp.imagePullPolicy" . }}
+          args:
+            - --config=/pimp/pimp.json
+          env:
+            - name: SERVICES_PIMP_AUTH_TOKEN
+              value: {{ required "Missing global.global value" .Values.global.gitcall.secret | quote }}
+            - name: GOPS_CONFIG_DIR
+              value: /tmp
+          ports:
+            - containerPort: 8080
+            {{- if .Values.global.serviceMonitor }}
+            {{- if .Values.global.serviceMonitor.enabled }}
+            - containerPort: {{ .Values.global.prometheusPort | default "9100" }}
+            {{- end }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /pimp/pimp.json
+              subPath: config
+            - name: tmp
+              mountPath: /tmp
+          securityContext:
+            runAsUser: 501
+            runAsGroup: 501
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            privileged: false
+            capabilities:
+              drop: [ NET_ADMIN, SYS_ADMIN, MAC_ADMIN, SETUID, SETGID, FOWNER, CHOWN, MKNOD ]
+      volumes:
+        - name: config
+          configMap:
+            name: pimp-configmap
+        - name: tmp
+          emptyDir: { }

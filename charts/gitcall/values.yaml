@@ -1,0 +1,31 @@
+appName: gitcall
+image:
+  repository: docker-hub.middleware.biz/public/gitcall/gitcall
+  tag: ""
+  pullPolicy: IfNotPresent
+  pullSecrets: { }
+
+migratorImage:
+  repository: docker-hub.middleware.biz/public/gitcall/gitcall-migrations
+  tag: ""
+  pullPolicy: IfNotPresent
+  pullSecrets: { }
+
+replicaCount: 2
+
+resources: { }
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+
+config:
+  mq:
+    vhost: "/gitcall"
+    task_vhost: "/dundergitcall"

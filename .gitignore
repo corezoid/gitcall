@@ -1,0 +1,4 @@
+templates/secret.yaml
+/.idea/*
+/.idea/
+my-values.yaml

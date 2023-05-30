@@ -1,0 +1,23 @@
+image:
+  repository: docker-hub.middleware.biz/public/gitcall/servicespimp
+  tag: ""
+  pullPolicy: IfNotPresent
+  pullSecrets: { }
+
+replicaCount: 2
+
+autoscaling:
+  enabled: false
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+
+resources: { }
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+networkPolicy:
+  enabled: false

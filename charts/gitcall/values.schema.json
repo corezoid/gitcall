@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://git.corezoid.com/gitcall/gitcall-helm/-/raw/master/charts/gitcall/values.schema.json",
+  "title": "GitCall",
+  "description": "GitCall Helm chart values.yaml schema",
+  "type": "object",
+  "required": [],
+  "properties": {}
+}

@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://git.corezoid.com/gitcall/gitcall-helm/-/raw/master/charts/pimp/values.schema.json",
+  "title": "Service Pimp",
+  "description": "GitCall Service Pimp Helm chart values.yaml schema",
+  "type": "object",
+  "required": ["image", "replicaCount"],
+  "properties": {
+    "image": {
+      "type": "object",
+      "required": ["repository", "pullPolicy"],
+      "properties": {
+        "repository": {"type": "string", "minLength": 1},
+        "tag": {"type": "string"},
+        "pullPolicy": {"enum": ["IfNotPresent", "Always", "Never"]},
+        "pullSecrets": {
+          "type": "object"
+        }
+      }
+    },
+    "replicaCount": {
+      "type": "number",
+      "minimum": 1
+    },
+    "autoscaling": {
+      "type": "object",
+      "required": ["enabled", "maxReplicas", "targetCPUUtilizationPercentage"],
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "maxReplicas": {"type": "number", "minimum": 2},
+        "targetCPUUtilizationPercentage": {"type": "number", "minimum": 50, "maximum": 100}
+      }
+    },
+    "resources": {
+      "type": "object",
+      "properties": {
+        "limits": {
+          "type": "object",
+          "properties": {
+            "cpu": {
+              "oneOf": [
+                {"type": "number", "minimum": 0.001},
+                {"type": "string", "pattern": "^\\d+m$"}
+              ]
+            },
+            "memory": {
+              "oneOf": [
+                {"type": "number", "minimum": 1},
+                {"type": "string", "pattern": "^\\d+[EPTGMk]i?$"}
+              ]
+            }
+          }
+        }
+      }
+    },
+    "networkPolicy": {
+      "required": ["enabled"],
+      "properties": {
+        "enabled": {"type": "boolean"}
+      }
+    }
+  }
+}

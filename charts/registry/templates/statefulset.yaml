@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "common.Name" . }}-statefulset
+  labels:
+    {{- include "registry.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "common.Name" . }}-service
+  selector:
+    matchLabels:
+      {{- include "registry.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "registry.labels" . | nindent 8 }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/registry_secret.yaml") . | sha256sum }}
+    spec:
+      {{- include "gitcall.affinity" . }}
+      {{- include "common.imagePullSecrets" . | nindent 6 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - /bin/registry
+            - serve
+            - /etc/docker/registry/config.yml
+          ports:
+            - containerPort: 5000
+              name: registry
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5000
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5000
+          env: {{ include "registry.envs" . | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/docker/registry
+            - name: auth
+              mountPath: /auth
+              readOnly: true
+            {{- if eq .Values.storage.provider "filesystem" }}
+            - name: data
+              mountPath: /var/lib/registry
+            {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "common.Name" . }}-configmap
+        - name: auth
+          secret:
+            secretName: {{ include "common.Name" . }}-secret
+            items:
+              - key: htpasswd
+                path: htpasswd
+{{- if eq .Values.storage.provider "filesystem" }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        {{- if .Values.storage.filesystem.storageClass }}
+        {{- if (eq "-" .Values.storage.filesystem.storageClass) }}
+        storageClassName: ""
+        {{- else }}
+        storageClassName: {{ .Values.storage.filesystem.storageClass }}
+        {{- end }}
+        {{- end }}
+        accessModes: [ ReadWriteOnce ]
+        resources:
+          requests:
+            storage: {{ .Values.storage.filesystem.size }}
+{{- end }}

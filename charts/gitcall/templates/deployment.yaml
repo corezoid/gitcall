@@ -1,0 +1,80 @@
+{{- $tplVals := .Values }}
+{{- $_ := set $tplVals "Template" .Template }}
+
+{{- $pgCfg := required "Missing global.postgres value" .Values.global.db.secret.data }}
+{{- $mqCfg := required "Missing global.mq value" .Values.global.mq.secret.data }}
+
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: {{ include "common.Name" . }}-deployment
+  labels:
+    {{- include "gitcall.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "gitcall.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: {{ include "common.spec.strategy.type" . }}
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      labels:
+        {{- include "gitcall.labels" . | nindent 8 }}
+    spec:
+      {{- include "gitcall.affinity" . }}
+      terminationGracePeriodSeconds: 40
+      initContainers:
+        - name: init-wait-postgresql
+          image: {{ include "common.initContainers.image" . }}
+          command: [ "sh", "-c", "until nc -zvw1 {{ $pgCfg.dbhost }} {{ $pgCfg.dbport }}; do echo waiting for dependencies; sleep 2; done;" ]
+        - name: init-wait-rabbitmq
+          image: {{ include "common.initContainers.image" . }}
+          command: [ "sh", "-c", "until nc -zvw1 {{ $mqCfg.host }} {{ $mqCfg.port }}; do echo waiting for dependencies; sleep 2; done;" ]
+      {{- include "common.imagePullSecrets" . | nindent 6 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ include "gitcall.gitcall.imageUrl" . }}
+          imagePullPolicy: {{ include "gitcall.gitcall.imagePullPolicy" . }}
+          command: [ "/gitcall/gitcall" ]
+          args:
+            - --config=/gitcall/gitcall.json
+          ports:
+            {{- if .Values.global.serviceMonitor }}
+            {{- if .Values.global.serviceMonitor.enabled }}
+            - containerPort: {{ .Values.global.prometheusPort | default "9100" }}
+            {{- end }}
+            {{- end }}
+          env:
+            - name: GOPS_CONFIG_DIR
+              value: /tmp
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /gitcall/gitcall.json
+              subPath: gitcall
+            - name: tmp
+              mountPath: /tmp
+          securityContext:
+            runAsUser: 501
+            runAsGroup: 501
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            privileged: false
+            capabilities:
+              drop: [ NET_ADMIN, SYS_ADMIN, MAC_ADMIN, SETUID, SETGID, FOWNER, CHOWN, MKNOD ]
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "common.Name" . }}-configmap
+        - name: tmp
+          emptyDir: { }
