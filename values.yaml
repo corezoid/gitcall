@@ -63,6 +63,9 @@ global:
     # vm_memory_high_watermark.relative
     memoryHighWatermark: 0.3
 
+  docker:
+    insecure_registries: false  # if you have a self-signed certificate we recommend true
+
   gitcall:
     # true or false
     enabled: true
