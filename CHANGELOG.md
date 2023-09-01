@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [0.2.5] - 2023-05-29
+
+### Helm changes
+
+- added support for modification lifetime of a pod without tasks
+
+
+## [0.2.4] - 2023-05-29
+
+### Helm changes
+
+- added the ability to work with self-signed certificates
+
+
 ## [0.2.3] - 2023-05-29
 
 ### Helm changes

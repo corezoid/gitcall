@@ -235,7 +235,7 @@
   },
   "servicestopper": {
     "check_period_ms": 30000,
-    "maybe_stop_after_idling_sec": 60,
+    "maybe_stop_after_idling_sec": {{ .Values.global.gitcall.maybe_stop_after_idling_sec | default "60" }},
     "stop_after_maybe_stop_ms": 5000,
     "worker_pool_size": 10
   },
