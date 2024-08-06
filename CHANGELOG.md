@@ -48,6 +48,7 @@ Improvements
 - The CI has been updated.
 - All 8 Dockerfile/code runners have been updated to support the JSONRPC-2.0/HTTP protocol. Now, all the runners are included in the gitcall project instead of separate repos
 - The user-build.sh script has been updated to support any command syntax: previously the commands containing quotation marks were not supported.
+- Switch to a new image registry - `imageRegistry: hub.corezoid.com`
 
 Config Changes
 - The following config parameters have been added:
