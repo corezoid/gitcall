@@ -1,6 +1,6 @@
 serviceName: "gitcall"
 image:
-  repository: docker-hub.middleware.biz/hub.docker.com/library/docker
+  repository: hub.corezoid.com/hub.docker.com/library/docker
   pullPolicy: IfNotPresent
   tag: ""
 
@@ -11,7 +11,7 @@ autoscaling:
   maxReplicas: 10
   targetCPUUtilizationPercentage: 50
 
-resources: { }
+resources: {}
   # limits:
   #   cpu: 100m
   #   memory: 128Mi

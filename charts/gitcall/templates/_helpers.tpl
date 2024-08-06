@@ -16,6 +16,7 @@ app.kubernetes.io/instance: {{ .Release.Name | quote }}
 {{- end }}
 
 {{- define "gitcall.labels" -}}
+app: gitcall
 helm.sh/chart: {{ include "gitcall.chart" . | quote }}
 {{ include "gitcall.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
@@ -51,9 +52,5 @@ app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
 {{- end }}
 
 {{- define "gitcall.gitcall.imageUrl" -}}
-{{ .Values.global.imageRegistry }}/{{ .Values.global.repotype | default "public" }}/gitcall/gitcall:{{ .Values.global.gitcall.tag | default .Chart.AppVersion }}
-{{- end }}
-
-{{- define "gitcall.gitcall-migrations.imageUrl" -}}
-{{ .Values.global.imageRegistry }}/{{ .Values.global.repotype | default "public" }}/gitcall/gitcall-migrations:{{ .Values.global.gitcall.migration_tag | default .Chart.AppVersion }}
+{{ .Values.global.imageRegistry }}/{{ .Values.global.repotype | default "public" }}/gitcall:{{ .Values.global.gitcall.tag | default .Chart.AppVersion }}
 {{- end }}

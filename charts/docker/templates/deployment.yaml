@@ -21,12 +21,14 @@ spec:
         {{- include "docker.labels" . | nindent 8 }}
         http: "true"
     spec:
-      {{- include "gitcall.affinity" . }}
       terminationGracePeriodSeconds: 40
-      {{- include "common.imagePullSecrets" . | nindent 6 }}
+      {{- if not (eq .Values.global.repotype "public") }}
+      imagePullSecrets:
+        - name: {{ .Values.global.imagePullSecrets.name }}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
           imagePullPolicy: {{ include "gitcall.docker.imagePullPolicy" . }}
           ports:
             - name: docker
@@ -34,7 +36,9 @@ spec:
               protocol: TCP
             {{- if .Values.global.serviceMonitor }}
             {{- if .Values.global.serviceMonitor.enabled }}
-            - containerPort: 9323
+            - name: monitoring
+              containerPort: 9323
+              protocol: TCP
             {{- end }}
             {{- end }}
           env:
@@ -56,3 +60,11 @@ spec:
             name: {{ include "common.Name" . }}-configmap
         - name: data
           emptyDir: { }
+      {{- with .Values.global.gitcall.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.global.gitcall.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

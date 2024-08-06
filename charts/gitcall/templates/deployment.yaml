@@ -19,8 +19,8 @@ spec:
     rollingUpdate:
       maxSurge: 1
       maxUnavailable: 0
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
+  {{- if .Values.global.gitcall.autoscaling.enabled }}
+  replicas: {{ .Values.global.gitcall.autoscaling.minReplicas }}
   {{- end }}
   template:
     metadata:
@@ -29,8 +29,8 @@ spec:
       labels:
         {{- include "gitcall.labels" . | nindent 8 }}
     spec:
-      {{- include "gitcall.affinity" . }}
       terminationGracePeriodSeconds: 40
+      serviceAccountName: gitcall-serviceaccount
       initContainers:
         - name: init-wait-postgresql
           image: {{ include "common.initContainers.image" . }}
@@ -38,7 +38,10 @@ spec:
         - name: init-wait-rabbitmq
           image: {{ include "common.initContainers.image" . }}
           command: [ "sh", "-c", "until nc -zvw1 {{ $mqCfg.host }} {{ $mqCfg.port }}; do echo waiting for dependencies; sleep 2; done;" ]
-      {{- include "common.imagePullSecrets" . | nindent 6 }}
+      {{- if not (eq .Values.global.repotype "public") }}
+      imagePullSecrets:
+        - name: {{ .Values.global.imagePullSecrets.name }}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: {{ include "gitcall.gitcall.imageUrl" . }}
@@ -49,7 +52,7 @@ spec:
           ports:
             {{- if .Values.global.serviceMonitor }}
             {{- if .Values.global.serviceMonitor.enabled }}
-            - containerPort: {{ .Values.global.prometheusPort | default "9100" }}
+            - containerPort: {{ .Values.global.gitcall.prometheusPort | default "9100" }}
             {{- end }}
             {{- end }}
           env:
@@ -78,3 +81,11 @@ spec:
             name: {{ include "common.Name" . }}-configmap
         - name: tmp
           emptyDir: { }
+      {{- with .Values.global.gitcall.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.global.gitcall.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

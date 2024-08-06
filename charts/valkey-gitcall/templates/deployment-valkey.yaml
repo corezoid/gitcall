@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitcall-valkey-deployment
+  labels:
+    {{- include "gitcall.valkey.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "gitcall.valkey.labels" . | nindent 6 }}
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap-valkey.yaml") . | sha256sum }}
+      labels:
+        {{- include "gitcall.valkey.labels" . | nindent 8 }}
+    spec:
+      {{- if not (eq .Values.global.repotype "public") }}
+      imagePullSecrets:
+        - name: {{ .Values.global.imagePullSecrets.name }}
+      {{- end }}
+      containers:
+      - name: master
+        image: "{{ .Values.image.registry }}{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            memory: 200Mi
+          requests:
+            cpu: 50m
+            memory: 100Mi
+        readinessProbe:
+          exec:
+            command:
+              - sh
+              - -c
+              - "valkey-cli -h localhost ping"
+          initialDelaySeconds: 15
+          timeoutSeconds: 5
+        livenessProbe:
+          exec:
+            command:
+              - sh
+              - -c
+              - "valkey-cli -h localhost ping"
+          initialDelaySeconds: 20
+          periodSeconds: 3
+        ports:
+        - name: app
+          containerPort: {{ .Values.appPort }}
+          protocol : TCP
+        volumeMounts:
+          - name: valkeyconfig
+            mountPath: /usr/local/etc/valkey
+      volumes:
+        - name: valkeyconfig
+          configMap:
+            name: gitcall-valkey-config

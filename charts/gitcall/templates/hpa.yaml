@@ -1,4 +1,4 @@
-{{- if .Values.autoscaling.enabled }}
+{{- if .Values.global.gitcall.autoscaling.enabled }}
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
@@ -10,7 +10,7 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: {{ include "gitcall.fullname" . | quote }}
-  minReplicas: {{ .Values.replicaCount }}
-  maxReplicas: {{ .Values.autoscaling.maxReplicas }}
-  targetCPUUtilizationPercentage: {{ .Values.autoscaling.targetCPUUtilizationPercentage }}
+  minReplicas: {{ .Values.global.gitcall.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.global.gitcall.autoscaling.maxReplicas }}
+  targetCPUUtilizationPercentage: {{ .Values.global.gitcall.autoscaling.targetCPUUtilizationPercentage }}
 {{- end }}

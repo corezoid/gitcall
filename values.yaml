@@ -1,33 +1,54 @@
 global:
   # second level domain only! / core domain (example: simulator.loc)
-  domain: "dev-devops.corezoid.com"
-  imageRegistry: docker-hub.middleware.biz
-  repotype: "public"
+  domain: "simulator.loc"
+  imageRegistry: hub.corezoid.com
+  repotype: "gitcall"
   env: prod
-#  imagePullSecrets:
-#    name: corezoid-secret
+  # repotype: "public/gitcall"
+  imagePullPolicy: IfNotPresent
   imageInit:
-    repository: docker-hub.middleware.biz/public/alpine
+    repository: hub.corezoid.com/hub.docker.com/library/alpine
     pullPolicy: IfNotPresent
-    tag: 3.17
+    tag: "3.20"
   alpineImage:
-    registry: docker-hub.middleware.biz
-    repository: alpine
-    tag: 3.17
+    registry: hub.corezoid.com
+    repository: hub.docker.com/library/alpine
+    tag: "3.20"
   serviceMonitor:
-    enabled: false
+    enabled: true
   deploymentStrategy:
     type: RollingUpdate
+  networkPolicy:
+    enabled: false
 
   # Ingress annotations
   ingress:
-    className: "private-nginx"
+    className: internal-nginx
+    annotations:
+      ingress.class: internal-nginx
+  dashboards:
+    # -- If enabled, Grafana dashboards are deployed
+    enabled: false
+    # -- Annotations to add to the Grafana dashboard ConfigMap
+    # Note: If using with middleware observability platform, annotation should be provided to place dashboards in proper folder.
+    # From observability chart, value from grafana.sidecar.dashboards.folderAnnotation is a
+    # "key" for annotation, and value is a name of folder which will be created in Grafana UI for Gitcall dashboards.
+    annotations: { }
+    # -- Labels to add to the Grafana dashboard ConfigMap
+    # Note: If using with middleware observability platform, labels should be provided to discovery
+    # dashboards and upload them to grafana. From observability chart, value from grafana.sidecar.dashboards.label is a key,
+    # and grafana.sidecar.dashboards.labelValue is a value for that label.
+    # So, label should looks like grafana.sidecar.dashboards.label:grafana.sidecar.dashboards.labelValue
+    labels: { }
 
   db:
+    # if internal true - create and use internal postgres container
+    # if internal false - enable external db, like aws rds
     internal: false
     ## secret configuration for postgresql
+
     ## pvc name
-    persistantVolumeClaimName: "postgresql-pvc"
+    persistantVolumeClaimName: "postgresql-pvc" # If internal: true, then uncomment this line
     secret:
       ## true - secret will be created automaticaly with provided values
       ## false - secret should be created manualy
@@ -40,13 +61,18 @@ global:
       dbsuperuserpwd: "dbsuperuserpwd"
       data:
         dbhost: "DBHOST"
+        # dbhost: "pg-postgresql"   # If internal: true, then this host
         dbport: "5432"
         dbuser: "dbuser"
         dbpwd: "dbpwd"
+        dbuser_fdw: "fdw_user"
+        dbpwd_fdw: "fdw_user_passwd"
 
   #######  RabbitMQ  ########
   ## Supported version  3.9.*
   mq:
+    # if internal true - create and use internal rmq container
+    # if internal false - enable external rmq (on aws ec2 instances as example)
     internal: false
     ## secret configuration for rabbitmq
     secret:
@@ -55,59 +81,63 @@ global:
       create: true
       name: "rabbitmq-secret"
       data:
-        host: "RMQHOST"
+        # host: "rabbit-service"  # If internal: true, then this host
+        host: "RMQHOST"  # If internal: false, then this host
         port: "5672"
         vhost: "/conveyor"
-        username: "RMQ_USER"
-        password: "RMQ_PASSWORD"
+        username: "rabbituser"
+        password: "rabbitpassword"
     # vm_memory_high_watermark.relative
     memoryHighWatermark: 0.3
-
-  docker:
-    insecure_registries: false  # if you have a self-signed certificate we recommend true
 
   gitcall:
     # true or false
     enabled: true
-    tag: "2.6.0"
-    migration_tag: "2.5.1"
     registry:
       # If use specific domain for GitCall registry set `host` parameter
       # host: "gitcall.reiestry.loc"
       # else set `subDomain` parameter, will be subDomain.domain
       subDomain: "gitcall"
-      tls: true
-      host: "gitcall.dev-devops.corezoid.com" # set for your registry domain
-    secret:
-      username: "k8s"
-      password: "GHbJS2Pgxa2vDBgRK4alsca5KGN4s2Jv"
-    serviceName: "gitcall"
-    mq_vhost: "/conveyor"
-    dunder_mq_vhost: "/conveyor"
+      tls: false
+    secret: "km5kHVHJldb27deLxh4PNBhejlBnTTCXthG6hkvvBdbqwbX65oP7buDqsrhkHHoW"
+    mq_vhost: "/gitcall"
+    dunder_mq_vhost: "/dundergitcall"
     db_name: "gitcall"
-    pimp:
-      tag: "1.2.0"
-    affinity: {}
-    #    # hard AZ-based affinity
-    #      podAntiAffinity:
-    #        requiredDuringSchedulingIgnoredDuringExecution:
-    #          - labelSelector:
-    #              matchExpressions:
-    #              - key: tier
-    #                operator: In
-    #                values:
-    #                  - gitcall
-    #            topologyKey: failure-domain.beta.kubernetes.io/zone
-    #    # soft AZ-based affinity
-    #      podAntiAffinity:
-    #        preferredDuringSchedulingIgnoredDuringExecution:
-    #          - labelSelector:
-    #              matchExpressions:
-    #                - key: tier
-    #                  operator: In
-    #                  values:
-    #                    - gitcall
-    #            topologyKey: failure-domain.beta.kubernetes.io/zone
+    networkPolicy:
+      enabled: true
+      egress:
+        # Allow communication to Kubernetes DNS service
+        - to:
+            - namespaceSelector:
+                matchLabels:
+                  kubernetes.io/metadata.name: kube-system
+            - podSelector:
+                matchLabels:
+                  k8s-app: kube-dns
+          ports:
+            - protocol: UDP
+              port: 53
+        # Allow internet access
+        - to:
+            - ipBlock:
+                cidr: 0.0.0.0/0
+                # Exclude traffic to Kubernetes service IPs and pods
+                except:
+                  - 10.0.0.0/8
+                  - 172.16.0.0/12
+                  - 192.168.0.0/16
+                  - 169.254.169.254/32
+    affinity: { }
+  valkey:
+    use: true
+    internal: true
+    secret:
+      name: "valkey"
+      create: true
+      data:
+        host: "gitcall-valkey-service"
+        port: "6379"
+        password: "Password"
 registry:
   storage:
     provider: "filesystem"  # can be "filesystem" or "s3"
@@ -115,9 +145,9 @@ registry:
       size: "10Gi"
       storageClass: "gp2"
 #    s3:
-#      region: "eu-west-1"
+#      region: "eu-central-1"
 #      regionEndpoint: ""
-#      bucket: "gitcall-registry"
+#      bucket: ""
 #      rootDirectory: ""
 #      accessKey: ""
 #      secretKey: ""
