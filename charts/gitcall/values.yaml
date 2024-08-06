@@ -1,17 +1,11 @@
 appName: gitcall
 image:
-  repository: docker-hub.middleware.biz/public/gitcall/gitcall
+  repository: hub.corezoid.com/public/gitcall/gitcall
   tag: ""
   pullPolicy: IfNotPresent
   pullSecrets: { }
 
-migratorImage:
-  repository: docker-hub.middleware.biz/public/gitcall/gitcall-migrations
-  tag: ""
-  pullPolicy: IfNotPresent
-  pullSecrets: { }
-
-replicaCount: 2
+replicaCount: 1
 
 resources: { }
   #   cpu: 100m

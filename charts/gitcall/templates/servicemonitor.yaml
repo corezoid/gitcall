@@ -13,7 +13,7 @@ spec:
       {{- include "gitcall.labels" . | nindent 6 }}
   podMetricsEndpoints:
   - path: {{ .Values.prometheusPath | default "/metrics" }}
-    targetPort: {{ .Values.global.prometheusPort | default "9100" }}
+    targetPort: {{ .Values.global.gitcall.prometheusPort | default "9100" }}
     interval: {{ .Values.prometheusInterval | default "15s" }}
 {{- end -}}
 {{- end -}}

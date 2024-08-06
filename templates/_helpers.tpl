@@ -29,6 +29,5 @@ imagePullSecrets:
 {{- end -}}
 
 {{- define "common.initContainers.image" -}}
-{{- if and (ne .Values.global.imageRegistry "") (ne .Values.global.imageRegistry "docker-hub.middleware.biz") }}{{ .Values.global.imageRegistry }}/{{- end}}{{ .Values.global.alpineImage.registry }}/{{ if .Values.global.useCentos8 }}{{ .Values.global.centos8Repo }}/{{ else }}{{- if not (eq .Values.global.repotype "") }}{{ .Values.global.repotype }}/{{- end }}{{ end }}{{ .Values.global.alpineImage.repository }}:{{ .Values.global.alpineImage.tag }}
+{{ .Values.global.imageInit.repository }}:{{ .Values.global.imageInit.tag }}
 {{- end }}
-

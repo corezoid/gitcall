@@ -1,8 +1,10 @@
 image:
-  repository: docker-hub.middleware.biz/hub.docker.com/library/registry
+  repository: hub.corezoid.com/hub.docker.com/library/registry
   tag: ""
   pullPolicy: IfNotPresent
   pullSecrets: { }
+
+replicaCount: 2
 
 storage:
   provider: filesystem

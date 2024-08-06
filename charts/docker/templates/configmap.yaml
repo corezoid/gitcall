@@ -7,10 +7,6 @@ metadata:
 data:
   config: |
     {
-      {{- if eq .Values.global.docker.insecure_registries true }}
-      "debug": true,
-      "insecure-registries": ["{{.Values.global.gitcall.registry.host}}","{{.Values.global.imageRegistry}}"]
-      {{- else }}
       "debug": true
-      {{- end }}
+
     }

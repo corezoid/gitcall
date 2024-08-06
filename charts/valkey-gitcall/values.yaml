@@ -1,0 +1,6 @@
+appName: valkey
+appPort: 6379
+image:
+  registry: valkey
+  repository: /valkey
+  tag: "7.2"

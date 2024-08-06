@@ -11,5 +11,6 @@ spec:
       name: registry
       targetPort: 5000
       # nodePort: 32500
+  # type: NodePort
   selector:
     {{- include "registry.selectorLabels" . | nindent 4 }}

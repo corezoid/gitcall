@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitcall-valkey-service
+  labels:
+    {{- include "gitcall.valkey.labels" . | nindent 4 }}
+spec:
+  ports:
+  - port: {{ .Values.appPort }}
+    targetPort: {{ .Values.appPort }}
+  selector:
+    {{- include "gitcall.valkey.labels" . | nindent 4 }}

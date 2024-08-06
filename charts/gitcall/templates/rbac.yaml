@@ -1,16 +1,28 @@
+apiVersion: "v1"
+kind: "ServiceAccount"
+metadata:
+  name: gitcall-serviceaccount
+  labels:
+    {{- include "gitcall.labels" . | nindent 4 }}
+
+---
+
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: pimp-clusterrole-{{ .Values.global.env | default "prod" }}
+  name: gitcall-clusterrole-{{ .Values.global.env | default "prod" }}
   labels:
-    {{- include "pimp.labels" . | nindent 4 }}
+    {{- include "gitcall.labels" . | nindent 4 }}
 rules:
   - apiGroups: [ "" ]
     resources: [ "namespaces" ]
     verbs: [ "get", "list", "create", "delete", "update" ]
   - apiGroups: [ "" ]
     resources: [ "pods" ]
-    verbs: [ "get", "list", "create", "delete", "update" ]
+    verbs: [ "get", "list", "create", "delete", "update"]
+  - apiGroups: [ "" ]
+    resources: [ "pods/log" ]
+    verbs: [ "get", "list" ]
   - apiGroups: [ "extensions", "apps" ]
     resources: [ "deployments" ]
     verbs: [ "get", "list", "create", "delete", "update" ]
@@ -26,7 +38,7 @@ rules:
   - apiGroups: [ "" ]
     resources: [ "secrets" ]
     verbs: [ "get", "list", "create", "delete", "update" ]
-{{- if .Values.networkPolicy.enabled }}
+{{- if .Values.global.networkPolicy.enabled }}
   - apiGroups: [ "crd.projectcalico.org" ]
     resources: [ "networkpolicies" ]
     verbs: [ "get", "list", "create", "delete", "patch" ]
@@ -37,15 +49,15 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: pimp-clusterrole-bind-{{ .Values.global.env | default "prod" }}
+  name: gitcall-clusterrole-bind-{{ .Values.global.env | default "prod" }}
   labels:
-    {{- include "pimp.labels" . | nindent 4 }}
+    {{- include "gitcall.labels" . | nindent 4 }}
 subjects:
   - kind: "ServiceAccount"
-    name: pimp-serviceaccount
+    name: gitcall-serviceaccount
     namespace: {{ .Release.Namespace }}
     apiGroup: ""
 roleRef:
   kind: "ClusterRole"
-  name: pimp-clusterrole-{{ .Values.global.env | default "prod" }}
+  name: gitcall-clusterrole-{{ .Values.global.env | default "prod" }}
   apiGroup: ""
