@@ -112,7 +112,7 @@
   "dundergitcall": {
     "docker_config": {
       "auths": {
-        {{ include "registry.host" . | quote }}: {
+        "registry-service.{{ .Release.Namespace }}.svc.cluster.local:5000": {
           "username": "{{ .Values.global.gitcall.secret.username }}",
           "password": "{{ .Values.global.gitcall.secret.password }}"
         }
@@ -149,14 +149,15 @@
           "secret_name": "{{ .Release.Name }}-pimp",
           "docker_config": {
             "auths": {
-              {{ include "registry.host" . | quote }}: {
+              "localhost:{{ .Values.global.gitcall.registry.nodePort | default "32500" }}": {
                 "username": "{{ .Values.global.gitcall.secret.username }}",
                 "password": "{{ .Values.global.gitcall.secret.password }}"
               }
             }
           }
         }
-      ]
+      ],
+      "registry_pull_host": "localhost:{{ .Values.global.gitcall.registry.nodePort | default "32500" }}"
     },
     "task_amqp": {
       "host": "{{ .Values.global.mq.secret.data.host }}",
@@ -170,8 +171,8 @@
     "usercode": {
       "service_port": 9999
     },
-    "usercode_registry": {{ include "registry.host" . | quote }},
-    "usercode_registry_schema": "http{{- if .Values.global.gitcall.registry.tls }}s{{- end }}"
+    "usercode_registry": "registry-service.{{ .Release.Namespace }}.svc.cluster.local:5000",
+    "usercode_registry_schema": "http"
   },
   "enigma": {
     "enabled": false

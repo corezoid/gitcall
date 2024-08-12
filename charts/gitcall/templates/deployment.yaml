@@ -59,7 +59,7 @@ spec:
             - name: GOPS_CONFIG_DIR
               value: /tmp
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml .Values.global.gitcall.resources | nindent 12 }}
           volumeMounts:
             - name: config
               mountPath: /gitcall/gitcall.json

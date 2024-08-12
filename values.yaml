@@ -2,7 +2,7 @@ global:
   # second level domain only! / core domain (example: simulator.loc)
   domain: "simulator.loc"
   imageRegistry: hub.corezoid.com
-  repotype: "gitcall"
+  repotype: "public"
   env: prod
   # repotype: "public/gitcall"
   imagePullPolicy: IfNotPresent
@@ -16,6 +16,12 @@ global:
     tag: "3.20"
   serviceMonitor:
     enabled: true
+  dashboards:
+    enabled: true
+    annotations:
+      grafana_folder: 'GitCall'
+    labels:
+      grafana_dashboard: 'true'
   deploymentStrategy:
     type: RollingUpdate
   networkPolicy:
@@ -93,16 +99,38 @@ global:
   gitcall:
     # true or false
     enabled: true
+    log_level: info
+    prometheusPort: 8060
+    tag: "2.7.4"
+    resources: {}
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 10
+      targetCPUUtilizationPercentage: 80
     registry:
+      ## @param gitcall.registry.useDomain Set use domain for registry or not
+      ## Set false to use registry-service.{{ .Release.Namespace }}.svc.cluster.local to get image registry
+      useDomain: false
       # If use specific domain for GitCall registry set `host` parameter
       # host: "gitcall.reiestry.loc"
       # else set `subDomain` parameter, will be subDomain.domain
       subDomain: "gitcall"
       tls: false
-    secret: "km5kHVHJldb27deLxh4PNBhejlBnTTCXthG6hkvvBdbqwbX65oP7buDqsrhkHHoW"
+    secret: "sEcRet"
     mq_vhost: "/gitcall"
     dunder_mq_vhost: "/dundergitcall"
     db_name: "gitcall"
+    docker:
+      replicaCount: 2
+    valkey:
+      # resources: {}
+      resources:
+        limits:
+          memory: 200Mi
+        requests:
+          cpu: 50m
+          memory: 100Mi
     networkPolicy:
       enabled: true
       egress:
@@ -127,7 +155,7 @@ global:
                   - 172.16.0.0/12
                   - 192.168.0.0/16
                   - 169.254.169.254/32
-    affinity: { }
+    affinity: {}
   valkey:
     use: true
     internal: true
@@ -141,13 +169,13 @@ global:
 registry:
   storage:
     provider: "filesystem"  # can be "filesystem" or "s3"
-    filesystem:
-      size: "10Gi"
-      storageClass: "gp2"
-#    s3:
-#      region: "eu-central-1"
-#      regionEndpoint: ""
-#      bucket: ""
-#      rootDirectory: ""
-#      accessKey: ""
-#      secretKey: ""
+    # filesystem:
+    #   size: "10Gi"
+    #   storageClass: "gp2"
+    # s3:
+    #   region: "eu-central-1"
+    #   regionEndpoint: ""
+    #   bucket: ""
+    #   rootDirectory: ""
+    #   accessKey: ""
+    #   secretKey: ""

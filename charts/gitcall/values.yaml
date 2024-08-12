@@ -7,13 +7,6 @@ image:
 
 replicaCount: 1
 
-resources: { }
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
-
 autoscaling:
   enabled: false
   maxReplicas: 10
