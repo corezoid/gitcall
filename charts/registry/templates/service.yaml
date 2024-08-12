@@ -9,8 +9,8 @@ spec:
     - port: 5000
       protocol: TCP
       name: registry
-      targetPort: 5000
-      # nodePort: 32500
-  # type: NodePort
+      # targetPort: 5000
+      nodePort: {{ .Values.global.gitcall.registry.nodePort | default "32500" }}
+  type: NodePort
   selector:
     {{- include "registry.selectorLabels" . | nindent 4 }}

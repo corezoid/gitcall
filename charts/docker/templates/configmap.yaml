@@ -7,6 +7,8 @@ metadata:
 data:
   config: |
     {
-      "debug": true
-
+      "debug": true,
+      "insecure-registries" : [
+        "registry-service.{{ .Release.Namespace }}.svc.cluster.local:5000"
+      ]
     }

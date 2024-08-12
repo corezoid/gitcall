@@ -1,6 +1,6 @@
 {{- define "registry.envs" -}}
 - name: REGISTRY_HTTP_HOST
-  value: "http{{ if .Values.global.gitcall.registry.tls }}s{{ end }}://{{ include "registry.host" . }}"
+  value: "http://registry-service.{{ .Release.Namespace }}.svc.cluster.local:5000"
 - name: REGISTRY_HTTP_SECRET
   valueFrom:
     secretKeyRef:

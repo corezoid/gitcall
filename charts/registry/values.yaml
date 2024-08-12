@@ -4,8 +4,6 @@ image:
   pullPolicy: IfNotPresent
   pullSecrets: { }
 
-replicaCount: 2
-
 storage:
   provider: filesystem
   filesystem:

@@ -11,7 +11,7 @@ spec:
   strategy:
     type: RollingUpdate
   {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.global.gitcall.docker.replicaCount | default 2 }}
   {{- end }}
   template:
     metadata:

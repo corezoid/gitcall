@@ -25,11 +25,7 @@ spec:
         image: "{{ .Values.image.registry }}{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: IfNotPresent
         resources:
-          limits:
-            memory: 200Mi
-          requests:
-            cpu: 50m
-            memory: 100Mi
+          {{ .Values.global.gitcall.valkey.resources | toYaml | nindent 10 | trim }}
         readinessProbe:
           exec:
             command:

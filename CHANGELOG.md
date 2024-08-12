@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Chart 0.3.3 [GitCall 2.7.4] - 2024-08-12
+### Helm changes
+- Update `values.yaml` file example
+- Update `valkey` iamge registry to `docker.io/valkey`
+- Update `valkey` image tag to `7.2.-alpine`
+- Remove registry domain and switch to registry `service` and `NodePort`.
+- Switch `registry-service.{{ .Release.Namespace }}.svc.cluster.local` to get image registry
 
 ## Chart 0.3.0 [GitCall 2.7.2] - 2024-08-06
 ### Helm changes
@@ -48,7 +55,6 @@ Improvements
 - The CI has been updated.
 - All 8 Dockerfile/code runners have been updated to support the JSONRPC-2.0/HTTP protocol. Now, all the runners are included in the gitcall project instead of separate repos
 - The user-build.sh script has been updated to support any command syntax: previously the commands containing quotation marks were not supported.
-- Switch to a new image registry - `imageRegistry: hub.corezoid.com`
 
 Config Changes
 - The following config parameters have been added:
