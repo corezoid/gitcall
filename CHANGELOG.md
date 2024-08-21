@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Chart 0.3.4 [GitCall 2.7.6] - 2024-08-21
+### Helm changes
+- Applications versions:
+    - gitcall - 2.7.6
+- Move `storage` parameters from registry sub-chart to values file
+- Added usercode_idle_timeout_msec, added patch to rbac, fix filesystem
+
 ## Chart 0.3.3 [GitCall 2.7.4] - 2024-08-12
 ### Helm changes
 - Update `values.yaml` file example

@@ -4,19 +4,19 @@ image:
   pullPolicy: IfNotPresent
   pullSecrets: { }
 
-storage:
-  provider: filesystem
-  filesystem:
-    size: 10Gi
-    storageClass: "-"
-    accessMode: ReadWriteOnce
-  s3:
-    region: eu-central-1
-    regionEndpoint: ""
-    bucket: ChangeMe
-    rootDirectory: ""
-    accessKey: ChangeMe
-    secretKey: ChangeMe
+# storage:
+#   provider: filesystem
+#   filesystem:
+#     size: 10Gi
+#     storageClass: "-"
+#     accessMode: ReadWriteOnce
+#   s3:
+#     region: eu-central-1
+#     regionEndpoint: ""
+#     bucket: ChangeMe
+#     rootDirectory: ""
+#     accessKey: ChangeMe
+#     secretKey: ChangeMe
 
 ingress:
   className: nginx
