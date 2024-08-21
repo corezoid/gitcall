@@ -117,6 +117,19 @@ global:
       # else set `subDomain` parameter, will be subDomain.domain
       subDomain: "gitcall"
       tls: false
+      storage:
+        provider: s3
+        # filesystem:
+        #   size: 10Gi
+        #   storageClass: "-"
+        #   accessMode: ReadWriteOnce
+        # s3:
+        #   region: eu-central-1
+        #   regionEndpoint: ""
+        #   bucket: ChangeMe
+        #   rootDirectory: ""
+        #   accessKey: ChangeMe
+        #   secretKey: ChangeMe
     secret: "sEcRet"
     mq_vhost: "/gitcall"
     dunder_mq_vhost: "/dundergitcall"
@@ -166,6 +179,7 @@ global:
         host: "gitcall-valkey-service"
         port: "6379"
         password: "Password"
+    affinity: {}
 registry:
   storage:
     provider: "filesystem"  # can be "filesystem" or "s3"

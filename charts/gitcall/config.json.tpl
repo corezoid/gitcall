@@ -135,7 +135,8 @@
       "usercode_result_size_bytes": 2097152,
       "usercode_scale_cpu_average_utilization": 80,
       "usercode_scale_prometheus_server": "http://prometheus-server.monitoring.svc.cluster.local",
-      "usercode_timeout_msec": 60000
+      "usercode_timeout_msec": {{ .Values.global.gitcall.usercodeTimeoutMsec | default 60000 }},
+      "usercode_idle_timeout_msec": {{ .Values.global.gitcall.usercodeIdleTimeoutMsec | default 120000 }}
     },
     "k8s": {
       "manage_namespaces": false,

@@ -53,3 +53,11 @@ spec:
         - name: valkeyconfig
           configMap:
             name: gitcall-valkey-config
+      {{- with .Values.global.valkey.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.global.valkey.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

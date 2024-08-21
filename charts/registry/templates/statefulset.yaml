@@ -67,20 +67,14 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-{{- if eq .Values.storage.provider "filesystem" }}
+{{- if eq .Values.global.gitcall.registry.storage.provider "filesystem" }}
   volumeClaimTemplates:
     - metadata:
         name: data
       spec:
-        {{- if .Values.storage.filesystem.storageClass }}
-        {{- if (eq "-" .Values.storage.filesystem.storageClass) }}
-        storageClassName: ""
-        {{- else }}
-        storageClassName: {{ .Values.storage.filesystem.storageClass }}
-        {{- end }}
-        {{- end }}
+        storageClassName: {{ .Values.global.gitcall.registry.storage.filesystem.storageClass }}
         accessModes: [ ReadWriteOnce ]
         resources:
           requests:
-            storage: {{ .Values.storage.filesystem.size }}
+            storage: {{ .Values.global.gitcall.registry.storage.filesystem.size }}
 {{- end }}
