@@ -5,12 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## Chart 0.3.6 [GitCall 2.8.2] - 2024-10.29
+### Helm changes
+- Applications versions:
+    - gitcall - 2.8.2
+- Add `affinity` and `tolerations` for usercode pods.
+- Migrate config fot gitcall application form `json` to `yaml`.
+- Add support for `arm64` and `amd64` nodes.
+- Fix dashboard for work with headless-service monitoring.
+
+
+## Chart 0.3.5 [GitCall 2.7.6] - 2024-09-03
+### Helm changes
+- Applications versions:
+    - gitcall - 2.7.6
+- Add `headless-service` to gitcall application for monitoring
+- Change `PodMonitor` to `ServiceMonitor`
+
+
 ## Chart 0.3.4 [GitCall 2.7.6] - 2024-08-21
 ### Helm changes
 - Applications versions:
     - gitcall - 2.7.6
 - Move `storage` parameters from registry sub-chart to values file
 - Added usercode_idle_timeout_msec, added patch to rbac, fix filesystem
+
 
 ## Chart 0.3.3 [GitCall 2.7.4] - 2024-08-12
 ### Helm changes
@@ -19,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update `valkey` image tag to `7.2.-alpine`
 - Remove registry domain and switch to registry `service` and `NodePort`.
 - Switch `registry-service.{{ .Release.Namespace }}.svc.cluster.local` to get image registry
+
 
 ## Chart 0.3.0 [GitCall 2.7.2] - 2024-08-06
 ### Helm changes

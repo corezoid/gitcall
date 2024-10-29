@@ -45,7 +45,7 @@ spec:
             - name: auth
               mountPath: /auth
               readOnly: true
-            {{- if eq .Values.storage.provider "filesystem" }}
+            {{- if eq .Values.global.gitcall.registry.storage.provider "filesystem" }}
             - name: data
               mountPath: /var/lib/registry
             {{- end }}

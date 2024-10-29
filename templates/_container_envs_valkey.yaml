@@ -1,0 +1,18 @@
+{{- define "gitcall.container_envs_valkey" }}
+{{- $secret_name := ( include "gitcall.valkeySecretName" . ) }}
+- name: GITCALL_VALKEY_HOST
+  valueFrom:
+    secretKeyRef:
+      name: {{ $secret_name }}
+      key: host
+- name: GITCALL_VALKEY_PORT
+  valueFrom:
+    secretKeyRef:
+      name: {{ $secret_name }}
+      key: port
+- name: GITCALL_VALKEY_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ $secret_name }}
+      key: password
+{{- end }}

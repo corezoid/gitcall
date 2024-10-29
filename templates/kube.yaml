@@ -1,0 +1,52 @@
+{{- define "CorezoidInitWaitRabbitMQResolve" -}}
+- name: init-wait-rabbit-resolve
+  image: {{ include "common.initWait.image" . }}
+  imagePullPolicy: IfNotPresent
+  command: ["sh"]
+  args:
+    - "-c"
+    - |
+      if ! echo ${MQ_HOST} | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'; then
+        until IP=$(nslookup ${MQ_HOST} 2>/dev/null | grep "Address: " | sed 's/.*: //g;s/ .*//g'); [ -n "$IP" ]; do
+          echo "Waiting for RabbitMQ IP resolution";
+          sleep 2;
+        done
+      else
+        echo "${MQ_HOST} is already an IP address, skipping resolution.";
+      fi
+  env:
+    - name: MQ_HOST
+      valueFrom:
+        secretKeyRef:
+          name: {{ include "dbcall.rabbitSecretName" . }}
+          key: host
+  terminationMessagePath: /dev/termination-log
+  terminationMessagePolicy: File
+{{- end -}}
+
+{{- define "CorezoidInitWaitRabbitMQPort" -}}
+- name: init-wait-rmq-port
+  image: {{ include "common.initWait.image" . }}
+  command: ['sh']
+  args:
+    - "-c"
+    - |
+      until nc -zvw1 ${MQ_HOST} ${MQ_PORT};
+      do
+        echo "Waiting for RabbitMQ port available";
+        sleep 2;
+      done;
+  env:
+    - name: MQ_HOST
+      valueFrom:
+        secretKeyRef:
+          name: {{ include "dbcall.rabbitSecretName" . }}
+          key: host
+    - name: MQ_PORT
+      valueFrom:
+        secretKeyRef:
+          name: {{ include "dbcall.rabbitSecretName" . }}
+          key: port
+  terminationMessagePath: /dev/termination-log
+  terminationMessagePolicy: File
+{{- end -}}

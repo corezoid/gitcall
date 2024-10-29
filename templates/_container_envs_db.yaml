@@ -1,0 +1,38 @@
+{{- define "gitcall.container_envs_db" }}
+{{- $gitcall_secret_db := "" }}
+{{- if .Values.global.gitcall.db }}
+{{- $gitcall_secret_db = .Values.global.gitcall.db.secret }}
+{{- else if .Values.global.db }}
+{{- $gitcall_secret_db = .Values.global.db.secret }}
+{{- else }}
+{{- $gitcall_secret_db = nil }}
+{{- end }}
+{{- if $gitcall_secret_db.create }}
+{{- $secret_name := ( include "gitcall.postgresSecretName" . ) }}
+- name: GITCALL_POSTGRESQL_HOST
+  valueFrom:
+    secretKeyRef:
+      name: {{ $secret_name }}
+      key: dbhost
+- name: GITCALL_POSTGRESQL_PORT
+  valueFrom:
+    secretKeyRef:
+      name: {{ $secret_name }}
+      key: dbport
+- name: GITCALL_POSTGRESQL_USERNAME
+  valueFrom:
+    secretKeyRef:
+      name: {{ $secret_name }}
+      key: dbuser
+- name: GITCALL_POSTGRESQL_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ $secret_name }}
+      key: dbpwd
+- name: GITCALL_POSTGRESQL_DB_NAME
+  valueFrom:
+    secretKeyRef:
+      name: {{ $secret_name }}
+      key: db_name
+{{- end }}
+{{- end }}
