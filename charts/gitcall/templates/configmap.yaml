@@ -5,5 +5,5 @@ metadata:
   labels:
     {{- include "gitcall.labels" . | nindent 4 }}
 data:
-  gitcall: |
-    {{- tpl (.Files.Get "config.json.tpl") . | nindent 4 }}
+  gitcall.yaml: |
+    {{- tpl (.Files.Get "config.tpl.yaml") . | nindent 4 }}

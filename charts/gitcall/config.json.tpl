@@ -4,20 +4,20 @@
     "listen_port": 8060
   },
   "postgres": {
-    "host": "{{ .Values.global.db.secret.data.dbhost }}",
-    "port": {{ .Values.global.db.secret.data.dbport }},
-    "database": "{{ .Values.global.gitcall.db_name | default "git_call" }}",
-    "user": "{{ .Values.global.db.secret.data.dbuser }}",
-    "password": "{{ .Values.global.db.secret.data.dbpwd }}"
+    "host": "${GITCALL_POSTGRESQL_HOST}",
+    "port": ${GITCALL_POSTGRESQL_PORT},
+    "database": "${GITCALL_POSTGRESQL_DB_NAME}",
+    "user": "${GITCALL_POSTGRESQL_USERNAME}",
+    "password": "${GITCALL_POSTGRESQL_PASSWORD}"
   },
   "amqp": {
     "connections": [
       {
-        "host": "{{ .Values.global.mq.secret.data.host }}",
-        "port": {{ .Values.global.mq.secret.data.port }},
-        "username": "{{ .Values.global.mq.secret.data.username }}",
-        "password": "{{ .Values.global.mq.secret.data.password }}",
-        "vhost": "{{ include "gitcall.config.mq.vhost" . }}"
+        "host": "${GITCALL_RABBITMQ_HOST}",
+        "port": ${GITCALL_RABBITMQ_PORT},
+        "username": "${GITCALL_RABBITMQ_USERNAME}",
+        "password": "${GITCALL_RABBITMQ_PASSWORD}",
+        "vhost": "${GITCALL_RABBITMQ_VHOST}"
       }
     ],
     "buildarchive_consumer": {
@@ -132,7 +132,7 @@
       "usercode_min_replicas": 1,
       "usercode_request_cpu_milli_cores": 100,
       "usercode_request_memory_mb": 50,
-      "usercode_result_size_bytes": 2097152,
+      "usercode_result_size_bytes": {{ .Values.global.gitcall.usercode_result_size_bytes | default 2097152 }},
       "usercode_scale_cpu_average_utilization": 80,
       "usercode_scale_prometheus_server": "http://prometheus-server.monitoring.svc.cluster.local",
       "usercode_timeout_msec": {{ .Values.global.gitcall.usercodeTimeoutMsec | default 60000 }},
@@ -170,6 +170,17 @@
     },
     "tmp_dir": "/tmp",
     "usercode": {
+      {{- if .Values.global.gitcall.use_proxy }}
+      "image_proxy": "{{ .Values.global.imageRegistry }}/hub.docker.com/",
+      {{- end }}
+      {{- if .Values.global.gitcall.config.dundergitcall.usercode }}
+      {{- if .Values.global.gitcall.config.dundergitcall.usercode.spec }}
+      "spec":
+        {{- with .Values.global.gitcall.config.dundergitcall.usercode.spec }}
+          {{- toPrettyJson . | nindent 8 }}
+        {{- end }},
+      {{- end }}
+      {{- end }}
       "service_port": 9999
     },
     "usercode_registry": "registry-service.{{ .Release.Namespace }}.svc.cluster.local:5000",

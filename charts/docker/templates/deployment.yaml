@@ -1,3 +1,79 @@
+{{- if and (hasKey .Values.global.gitcall "docker") (hasKey .Values.global.gitcall.docker "archs") (.Values.global.gitcall.docker.archs) }}
+{{- range $arch, $config := .Values.global.gitcall.docker.archs }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "common.Name" $ }}-deployment-{{ $arch }}
+  labels:
+    {{- include "docker.labels" $ | nindent 4 }}
+    arch: {{ $arch }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "docker.selectorLabels" $ | nindent 6 }}
+      arch: {{ $arch }}
+  strategy:
+    type: RollingUpdate
+  {{- if not $.Values.autoscaling.enabled }}
+  replicas: {{ $.Values.global.gitcall.docker.replicaCount | default 2 }}
+  {{- end }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") $ | sha256sum | quote }}
+      labels:
+        {{- include "docker.labels" $ | nindent 8 }}
+        http: "true"
+        arch: {{ $arch }}
+    spec:
+      terminationGracePeriodSeconds: 40
+      {{- if not (eq $.Values.global.repotype "public") }}
+      imagePullSecrets:
+        - name: {{ $.Values.global.imagePullSecrets.name }}
+      {{- end }}
+      containers:
+        - name: {{ $.Chart.Name }}
+          image: {{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}
+          imagePullPolicy: {{ include "gitcall.docker.imagePullPolicy" $ }}
+          ports:
+            - name: docker
+              containerPort: 2375
+              protocol: TCP
+            {{- if $.Values.global.serviceMonitor }}
+            {{- if $.Values.global.serviceMonitor.enabled }}
+            - name: monitoring
+              containerPort: 9323
+              protocol: TCP
+            {{- end }}
+            {{- end }}
+          env:
+            - name: DOCKER_TLS_CERTDIR # make daemon use insecure connection
+              value: ""
+          resources:
+            {{- toYaml $.Values.resources | nindent 12 }}
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: config
+              mountPath: /etc/docker/daemon.json
+              subPath: config
+            - name: data
+              mountPath: /var/lib/docker/
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "common.Name" $ }}-configmap
+        - name: data
+          emptyDir: { }
+      affinity:
+        {{- toYaml $config.affinity | nindent 8 }}
+      tolerations:
+        {{- toYaml $config.tolerations | nindent 8 }}
+
+{{- end }}
+{{- end }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,6 +96,7 @@ spec:
       labels:
         {{- include "docker.labels" . | nindent 8 }}
         http: "true"
+        default: "true"
     spec:
       terminationGracePeriodSeconds: 40
       {{- if not (eq .Values.global.repotype "public") }}

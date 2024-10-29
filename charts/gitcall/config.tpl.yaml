@@ -1,0 +1,135 @@
+log_level: '{{ .Values.global.gitcall.log_level | default "info" }}'
+# prometheus metrics server. Path: /metrics 
+metrics:
+  listen_port: 8060
+postgres:
+  host: '${GITCALL_POSTGRESQL_HOST}'
+  port: ${GITCALL_POSTGRESQL_PORT}
+  database: '${GITCALL_POSTGRESQL_DB_NAME}'
+  user: '${GITCALL_POSTGRESQL_USERNAME}'
+  password: '${GITCALL_POSTGRESQL_PASSWORD}'
+redis:
+  host: '${GITCALL_VALKEY_HOST}'
+  port: ${GITCALL_VALKEY_PORT}
+  database: 0
+  password: '${GITCALL_VALKEY_PASSWORD}'
+# RabbitMQ for receiving tasks from corezod to gitcall
+task_amqp:
+  host: '{{ .Values.global.mq.secret.data.host }}'
+  port: {{ .Values.global.mq.secret.data.port }}
+  username: '{{ .Values.global.mq.secret.data.username }}'
+  password: '{{ .Values.global.mq.secret.data.password }}'
+  vhost: '{{ include "gitcall.config.mq.task_vhost" . }}'
+  prefetch: 50
+# RabbitMQ for receiving system requests from corezod to gitcall (save/build/deploy)
+amqp:
+  status_update_exchange: gitcall-v2-status-update
+  connections:
+    - host: '${GITCALL_RABBITMQ_HOST}'
+      port: ${GITCALL_RABBITMQ_PORT}
+      username: '${GITCALL_RABBITMQ_USERNAME}'
+      password: '${GITCALL_RABBITMQ_PASSWORD}'
+      vhost: '${GITCALL_RABBITMQ_VHOST}'
+  getservice_consumer:
+    exchange: gitcall-v2
+    queue: gitcall-v2-getservice
+    prefetch: 10
+  buildservice_consumer:
+    exchange: gitcall-v2
+    queue: gitcall-v2-buildservice
+    prefetch: 10
+  buildarchive_consumer:
+    exchange: gitcall-v2
+    queue: gitcall-v2-buildarchive
+    prefetch: 10
+  runservice_consumer:
+    exchange: gitcall-v2
+    queue: gitcall-v2-runservice
+    prefetch: 10
+  deployservice_consumer:
+    exchange: gitcall-v2
+    queue: gitcall-v2-deployservice
+    prefetch: 10
+  removeservice_consumer:
+    exchange: gitcall-v2
+    queue: gitcall-v2-removeservice
+    prefetch: 10
+  validateservice_consumer:
+    exchange: gitcall-v2
+    queue: gitcall-v2-validateservice
+    prefetch: 10
+  saveservice_consumer:
+    exchange: gitcall-v2
+    queue: gitcall-v2-saveservice
+    prefetch: 10
+  getpolicy_consumer:
+    exchange: gitcall-v2
+    queue: gitcall-v2-getpolicy
+    prefetch: 10
+  setpolicy_consumer:
+    exchange: gitcall-v2
+    queue: gitcall-v2-setpolicy
+    prefetch: 10
+  removepolicy_consumer:
+    exchange: gitcall-v2
+    queue: gitcall-v2-removepolicy
+    prefetch: 10
+  getsshkey_consumer:
+    exchange: gitcall-v2
+    queue: gitcall-v2-getsshkey
+    prefetch: 10
+  refreshsshkey_consumer:
+    exchange: gitcall-v2
+    queue: gitcall-v2-refreshsshkey
+    prefetch: 10
+# docker settings, bor usercode build
+docker:
+  service:
+    {{- if and (hasKey .Values.global.gitcall "docker") (hasKey .Values.global.gitcall.docker "archs") (.Values.global.gitcall.docker.archs) }}
+    {{- range $key, $value := .Values.global.gitcall.docker.archs }}
+    {{ $key }}:
+      host: 'docker-service-{{ $key }}.{{ $.Release.Namespace }}.svc.cluster.local'
+      port: 2375
+    {{- end }}
+    {{- end }}
+    default:
+      host: 'docker-service.{{ .Release.Namespace }}.svc.cluster.local'
+      port: 2375
+# registry settings
+registry:
+  host: 'registry-service.{{ .Release.Namespace }}.svc.cluster.local:5000'
+  pull_host: 'localhost:{{ .Values.global.gitcall.registry.nodePort | default "32500" }}'
+  username: '{{ .Values.global.gitcall.secret.username }}'
+  password: '{{ .Values.global.gitcall.secret.password }}'
+# kubernetes cluster settings
+k8s:
+  single_namespace: '{{ .Release.Namespace }}'
+  auth:
+    in_cluster: true
+# usercode settings
+usercode:
+  service_port: 9999
+  {{- if .Values.global.gitcall.use_proxy }}
+  image_proxy: '{{ .Values.global.imageRegistry }}/hub.docker.com/'
+  {{- end }}
+  {{- if and (hasKey .Values.global.gitcall.config "usercode") (hasKey .Values.global.gitcall.config.usercode "spec") }}
+  spec:
+    {{- with .Values.global.gitcall.config.usercode.spec }}
+    {{- toYaml . | nindent 6 }}
+    {{- end }}
+  {{- end }}  
+# usercode global policy
+global_policy:
+  usercode_request_cpu_milli_cores: {{ .Values.global.gitcall.usercode_request_cpu_milli_cores | default 100 }}
+  usercode_request_memory_mb: {{ .Values.global.gitcall.usercode_request_memory_mb | default 50 }}
+  usercode_limit_cpu_milli_cores:  {{ .Values.global.gitcall.usercode_limit_cpu_milli_cores | default 100 }}
+  usercode_limit_memory_mb: {{ .Values.global.gitcall.usercode_limit_memory_mb | default 200 }}
+  usercode_min_replicas: 1
+  usercode_max_replicas: {{ .Values.global.gitcall.usercode_max_replicas | default 10 }}
+  usercode_scale_cpu_average_utilization: 80
+  usercode_result_size_bytes: {{ .Values.global.gitcall.usercode_result_size_bytes | default 2097152 }}
+  usercode_timeout_msec: {{ .Values.global.gitcall.usercode_timeout_msec | default 60000 }}
+  usercode_idle_timeout_msec: {{ .Values.global.gitcall.usercode_idle_timeout_msec | default 120000 }}
+  usercode_concurrency: 10
+enigma:
+  enabled: false

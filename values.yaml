@@ -6,6 +6,8 @@ global:
   env: prod
   # repotype: "public/gitcall"
   imagePullPolicy: IfNotPresent
+  # imagePullSecrets:
+  #   name: corezoid-secret
   imageInit:
     repository: hub.corezoid.com/hub.docker.com/library/alpine
     pullPolicy: IfNotPresent
@@ -16,22 +18,6 @@ global:
     tag: "3.20"
   serviceMonitor:
     enabled: true
-  dashboards:
-    enabled: true
-    annotations:
-      grafana_folder: 'GitCall'
-    labels:
-      grafana_dashboard: 'true'
-  deploymentStrategy:
-    type: RollingUpdate
-  networkPolicy:
-    enabled: false
-
-  # Ingress annotations
-  ingress:
-    className: internal-nginx
-    annotations:
-      ingress.class: internal-nginx
   dashboards:
     # -- If enabled, Grafana dashboards are deployed
     enabled: false
@@ -46,7 +32,15 @@ global:
     # and grafana.sidecar.dashboards.labelValue is a value for that label.
     # So, label should looks like grafana.sidecar.dashboards.label:grafana.sidecar.dashboards.labelValue
     labels: { }
-
+  deploymentStrategy:
+    type: RollingUpdate
+  networkPolicy:
+    enabled: false
+  # Ingress annotations
+  ingress:
+    className: internal-nginx
+    annotations:
+      ingress.class: internal-nginx
   db:
     # if internal true - create and use internal postgres container
     # if internal false - enable external db, like aws rds
@@ -101,7 +95,7 @@ global:
     enabled: true
     log_level: info
     prometheusPort: 8060
-    tag: "2.7.4"
+    # tag: ""
     resources: {}
     autoscaling:
       enabled: false
@@ -168,7 +162,10 @@ global:
                   - 172.16.0.0/12
                   - 192.168.0.0/16
                   - 169.254.169.254/32
+    ## Affinity for all applications in gitcall
     affinity: {}
+    ## Tolerations for all applications in gitcall
+    tolerations:
   valkey:
     use: true
     internal: true
@@ -179,7 +176,10 @@ global:
         host: "gitcall-valkey-service"
         port: "6379"
         password: "Password"
+    ## Affinity for Valkey application in gitcall
     affinity: {}
+    ## Tolerations for Valkey application in gitcall
+    tolerations: []
 registry:
   storage:
     provider: "filesystem"  # can be "filesystem" or "s3"
