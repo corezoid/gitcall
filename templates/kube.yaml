@@ -1,5 +1,89 @@
-{{- define "CorezoidInitWaitRabbitMQResolve" -}}
-- name: init-wait-rabbit-resolve
+{{- define "GitcallInitWaitDatabase" -}}
+- name: init-wait-database-resolve
+  image: {{ include "common.initWait.image" . }}
+  imagePullPolicy: IfNotPresent
+  command: ["sh"]
+  args:
+    - "-c"
+    - |
+      if ! echo ${POSTGRES_DBHOST} | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'; then
+        until IP=$(nslookup ${POSTGRES_DBHOST} 2>/dev/null | grep "Address: " | sed 's/.*: //g;s/ .*//g'); [ -n "$IP" ]; do
+          echo "Waiting for Database IP resolution";
+          sleep 2;
+        done
+        echo "Resolved PostgreSQL (${POSTGRES_DBHOST}) to IP: $IP"
+      else
+        echo "${POSTGRES_DBHOST} is already an IP address, skipping resolution.";
+      fi
+  env:
+    - name: POSTGRES_DBHOST
+      valueFrom:
+        secretKeyRef:
+          name: {{ include "gitcall.postgresSecretName" . }}
+          key: dbhost
+  terminationMessagePath: /dev/termination-log
+  terminationMessagePolicy: File
+
+- name: init-wait-database-port
+  image: {{ include "common.initWait.image" . }}
+  command: ["sh"]
+  args:
+    - "-c"
+    - |
+      until nc -zvw1 ${POSTGRES_DBHOST} ${POSTGRES_DBPORT};
+      do
+        echo "Waiting for Database port available";
+        sleep 2;
+      done;
+  env:
+    - name: POSTGRES_DBHOST
+      valueFrom:
+        secretKeyRef:
+          name: {{ include "gitcall.postgresSecretName" . }}
+          key: dbhost
+    - name: POSTGRES_DBPORT
+      valueFrom:
+        secretKeyRef:
+          name: {{ include "gitcall.postgresSecretName" . }}
+          key: dbport
+  terminationMessagePath: /dev/termination-log
+  terminationMessagePolicy: File
+
+- name: init-wait-database-gitcall
+  image: {{ .Values.global.db.image }}
+  imagePullPolicy: {{ .Values.global.imagePullPolicy | default "IfNotPresent" }}
+  {{- if eq .Values.global.db.serverTlsSslenabled true }}
+  command: ["sh", "-c", "until PGPASSWORD=${POSTGRES_DBPWD} psql --set=sslmode={{ .Values.global.db.serverTlsSslmode }} -h ${POSTGRES_DBHOST} -U ${POSTGRES_DBUSER} -d ${GITCALL_DB} -c \"select 1\" > /dev/null 2>&1; do echo Waiting for ${GITCALL_DB} database; sleep 3; done;"]
+  {{- else }}
+  command: ["sh", "-c", "until PGPASSWORD=${POSTGRES_DBPWD} psql -h ${POSTGRES_DBHOST} -U ${POSTGRES_DBUSER} -d ${GITCALL_DB} -c \"select 1\" > /dev/null 2>&1; do echo Waiting for ${GITCALL_DB} database; sleep 3; done;"]
+  {{- end }}
+  env:
+    - name: POSTGRES_DBHOST
+      valueFrom:
+        secretKeyRef:
+          name: {{ include "gitcall.postgresSecretName" . }}
+          key: dbhost
+    - name: POSTGRES_DBPORT
+      valueFrom:
+        secretKeyRef:
+          name: {{ include "gitcall.postgresSecretName" . }}
+          key: dbport
+    - name: POSTGRES_DBUSER
+      valueFrom:
+        secretKeyRef:
+          name: {{ include "gitcall.postgresSecretName" . }}
+          key: dbuser
+    - name: POSTGRES_DBPWD
+      valueFrom:
+        secretKeyRef:
+          name: {{ include "gitcall.postgresSecretName" . }}
+          key: dbpwd
+    - name: GITCALL_DB
+      value: {{ .Values.global.gitcall.db_name | default "gitcall" }}
+{{- end -}}
+
+{{- define "GitcallInitWaitRabbitMQ" -}}
+- name: init-wait-rmq-resolve
   image: {{ include "common.initWait.image" . }}
   imagePullPolicy: IfNotPresent
   command: ["sh"]
@@ -11,6 +95,7 @@
           echo "Waiting for RabbitMQ IP resolution";
           sleep 2;
         done
+        echo "Resolved RabbitMQ (${MQ_HOST}) to IP: $IP"
       else
         echo "${MQ_HOST} is already an IP address, skipping resolution.";
       fi
@@ -18,16 +103,14 @@
     - name: MQ_HOST
       valueFrom:
         secretKeyRef:
-          name: {{ include "dbcall.rabbitSecretName" . }}
+          name: {{ include "gitcall.mqSecretName" . }}
           key: host
   terminationMessagePath: /dev/termination-log
   terminationMessagePolicy: File
-{{- end -}}
 
-{{- define "CorezoidInitWaitRabbitMQPort" -}}
 - name: init-wait-rmq-port
   image: {{ include "common.initWait.image" . }}
-  command: ['sh']
+  command: ["sh"]
   args:
     - "-c"
     - |
@@ -40,12 +123,64 @@
     - name: MQ_HOST
       valueFrom:
         secretKeyRef:
-          name: {{ include "dbcall.rabbitSecretName" . }}
+          name: {{ include "gitcall.mqSecretName" . }}
           key: host
     - name: MQ_PORT
       valueFrom:
         secretKeyRef:
-          name: {{ include "dbcall.rabbitSecretName" . }}
+          name: {{ include "gitcall.mqSecretName" . }}
+          key: port
+  terminationMessagePath: /dev/termination-log
+  terminationMessagePolicy: File
+{{- end -}}
+
+{{- define "GitcallInitWaitValkey" -}}
+- name: init-wait-valkey-resolve
+  image: {{ include "common.initWait.image" . }}
+  imagePullPolicy: IfNotPresent
+  command: ["sh"]
+  args:
+    - "-c"
+    - |
+      if ! echo ${VALKEY_HOST} | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'; then
+        until IP=$(nslookup ${VALKEY_HOST} 2>/dev/null | grep "Address: " | sed 's/.*: //g;s/ .*//g'); [ -n "$IP" ]; do
+          echo "Waiting for Redis IP resolution";
+          sleep 2;
+        done
+        echo "Resolved Valkey (${VALKEY_HOST}) to IP: $IP"
+      else
+        echo "${VALKEY_HOST} is already an IP address, skipping resolution.";
+      fi
+  env:
+    - name: VALKEY_HOST
+      valueFrom:
+        secretKeyRef:
+          name: {{ include "gitcall.valkeySecretName" . }}
+          key: host
+  terminationMessagePath: /dev/termination-log
+  terminationMessagePolicy: File
+
+- name: init-wait-valkey-port
+  image: {{ include "common.initWait.image" . }}
+  command: ["sh"]
+  args:
+    - "-c"
+    - |
+      until nc -zvw1 ${VALKEY_HOST} ${VALKEY_PORT};
+      do
+        echo "Waiting for Valkey port available";
+        sleep 2;
+      done;
+  env:
+    - name: VALKEY_HOST
+      valueFrom:
+        secretKeyRef:
+          name: {{ include "gitcall.valkeySecretName" . }}
+          key: host
+    - name: VALKEY_PORT
+      valueFrom:
+        secretKeyRef:
+          name: {{ include "gitcall.valkeySecretName" . }}
           key: port
   terminationMessagePath: /dev/termination-log
   terminationMessagePolicy: File
