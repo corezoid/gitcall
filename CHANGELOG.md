@@ -5,8 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Chart 0.3.7 [GitCall 2.8.2] - 2024-12-09
+### Helm changes
+- Applications versions:
+    - gitcall - 2.8.2
+- Fix for `HPA` gitcall
+- Update `valkey` up to `8 version`.
+- Refactor for initWait containers for `PostgreSQL`, `RabbitMQ` and `ValKey`
 
-## Chart 0.3.6 [GitCall 2.8.2] - 2024-10.29
+
+## Chart 0.3.6 [GitCall 2.8.2] - 2024-10-29
 ### Helm changes
 - Applications versions:
     - gitcall - 2.8.2
@@ -43,7 +51,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Chart 0.3.0 [GitCall 2.7.2] - 2024-08-06
 ### Helm changes
-
 The following features have been added:
 - Kubernetes NetworkPolicy (to Helm).
 - ARM64 support.

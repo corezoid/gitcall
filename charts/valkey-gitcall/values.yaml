@@ -3,4 +3,4 @@ appPort: 6379
 image:
   registry: docker.io/valkey
   repository: /valkey
-  tag: "7.2-alpine"
+  tag: "8-alpine"

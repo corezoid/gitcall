@@ -33,15 +33,9 @@ spec:
       terminationGracePeriodSeconds: 40
       serviceAccountName: gitcall-serviceaccount
       initContainers:
-        - name: init-wait-postgresql
-          image: {{ include "common.initContainers.image" . }}
-          command: [ "sh", "-c", "until nc -zvw1 {{ $pgCfg.dbhost }} {{ $pgCfg.dbport }}; do echo waiting for PostgreSQL dependencies; sleep 2; done;" ]
-        - name: init-wait-rabbitmq
-          image: {{ include "common.initContainers.image" . }}
-          command: [ "sh", "-c", "until nc -zvw1 {{ $mqCfg.host }} {{ $mqCfg.port }}; do echo waiting for RabbitMQ dependencies; sleep 2; done;" ]
-        - name: init-wait-valkey
-          image: {{ include "common.initContainers.image" . }}
-          command: [ "sh", "-c", "until nc -zvw1 {{ $valkeyCfg.host }} {{ $valkeyCfg.port }}; do echo waiting for ValKey dependencies; sleep 2; done;" ]
+        {{ include "GitcallInitWaitDatabase" . | nindent 8 | trim }}
+        {{ include "GitcallInitWaitRabbitMQ" . | nindent 8 | trim }}
+        {{ include "GitcallInitWaitValkey" . | nindent 8 | trim }}
       {{- if not (eq .Values.global.repotype "public") }}
       imagePullSecrets:
         - name: {{ .Values.global.imagePullSecrets.name }}

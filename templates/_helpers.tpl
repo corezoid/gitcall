@@ -47,6 +47,10 @@ imagePullSecrets:
 {{ .Values.global.imageInit.repository }}:{{ .Values.global.imageInit.tag }}
 {{- end }}
 
+{{- define "common.initWait.image" -}}
+{{ .Values.global.imageInit.repository }}:{{ .Values.global.imageInit.tag }}
+{{- end -}}
+
 {{- define "gitcall.postgresSecretAnnotations" -}}
 {{ if .Values.global.gitcall.secret.postgres.annotations -}}
 {{ toYaml .Values.global.gitcall.secret.postgres.annotations }}
