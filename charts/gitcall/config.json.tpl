@@ -173,8 +173,8 @@
       {{- if .Values.global.gitcall.use_proxy }}
       "image_proxy": "{{ .Values.global.imageRegistry }}/hub.docker.com/",
       {{- end }}
-      {{- if .Values.global.gitcall.config.dundergitcall.usercode }}
-      {{- if .Values.global.gitcall.config.dundergitcall.usercode.spec }}
+      {{- if and (hasKey .Values.global.gitcall "config") (hasKey .Values.global.gitcall.config "dundergitcall") (hasKey .Values.global.gitcall.config.dundergitcall "usercode") }}
+      {{- if hasKey .Values.global.gitcall.config.dundergitcall.usercode "spec" }}
       "spec":
         {{- with .Values.global.gitcall.config.dundergitcall.usercode.spec }}
           {{- toPrettyJson . | nindent 8 }}

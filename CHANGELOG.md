@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Chart 0.3.10 [GitCall 2.9.1] - 2025-10-07
+### Helm changes
+- Applications versions:
+    - gitcall - 2.9.1
+
+
+## Chart 0.3.9 [GitCall 2.9.0] - 2025-03-24
+### Helm changes
+- Applications versions:
+    - gitcall - 2.9.0
+    - docker - 28-dind
+    - valkey - 8
+- Update values.yaml file - change alpine version and enable dashboards creation.
+
+
+## Chart 0.3.8 [GitCall 2.9.0] - 2025-03-11
+### Helm changes
+- Applications versions:
+    - gitcall - 2.9.0
+    - docker - 28-dind
+    - valkey - 8
+- Add `anotherDefaultAddressPools` parameter
+- Add `podGlobalProxy` parameters for Proxy
+- Update `docker` to `28-dind`
+- Added ESM support for Node.js projects
+- Upgraded to Go `1.24`
+- Added support for `EXTERNAL_SECRET_PROVIDER` to load secrets from AWS
+- Updated all language versions in runners
+- Added support for env_vars (will be available after improvements in Corezoid)
+- Added build/task timeout management (will be available after improvements in Corezoid)
+
+
 ## Chart 0.3.7 [GitCall 2.8.2] - 2024-12-09
 ### Helm changes
 - Applications versions:

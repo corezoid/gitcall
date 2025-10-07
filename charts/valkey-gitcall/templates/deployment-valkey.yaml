@@ -22,7 +22,7 @@ spec:
       {{- end }}
       containers:
       - name: master
-        image: "{{ .Values.image.registry }}{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        image: "{{ .Values.global.valkey.image }}"
         imagePullPolicy: IfNotPresent
         resources:
           {{ .Values.global.gitcall.valkey.resources | toYaml | nindent 10 | trim }}

@@ -10,5 +10,7 @@ data:
       "debug": true,
       "insecure-registries" : [
         "registry-service.{{ .Release.Namespace }}.svc.cluster.local:5000"
-      ]
+      ]{{ if hasKey (index .Values "global" "gitcall" "docker" | default dict) "anotherDefaultAddressPools" }},
+      {{ .Values.global.gitcall.docker.anotherDefaultAddressPools | nindent 6 }}{{ end }}
     }
+
