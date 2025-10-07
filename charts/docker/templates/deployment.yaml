@@ -50,6 +50,14 @@ spec:
           env:
             - name: DOCKER_TLS_CERTDIR # make daemon use insecure connection
               value: ""
+            {{- if and (hasKey $.Values.global "gitcall") (hasKey $.Values.global.gitcall "podGlobalProxy") }}
+            - name: HTTPS_PROXY
+              value: {{ $.Values.global.gitcall.podGlobalProxy.https | quote }}
+            - name: HTTP_PROXY
+              value: {{ $.Values.global.gitcall.podGlobalProxy.http | quote }}
+            - name: NO_PROXY
+              value: {{ $.Values.global.gitcall.podGlobalProxy.noproxy | quote }}
+            {{- end }}
           resources:
             {{- toYaml $.Values.resources | nindent 12 }}
           securityContext:
@@ -121,6 +129,14 @@ spec:
           env:
             - name: DOCKER_TLS_CERTDIR # make daemon use insecure connection
               value: ""
+            {{- if and (hasKey .Values.global "gitcall") (hasKey .Values.global.gitcall "podGlobalProxy") }}
+            - name: HTTPS_PROXY
+              value: {{ .Values.global.gitcall.podGlobalProxy.https | quote }}
+            - name: HTTP_PROXY
+              value: {{ .Values.global.gitcall.podGlobalProxy.http | quote }}
+            - name: NO_PROXY
+              value: {{ .Values.global.gitcall.podGlobalProxy.noproxy | quote }}
+            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           securityContext:

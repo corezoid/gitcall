@@ -112,7 +112,7 @@ usercode:
   {{- if .Values.global.gitcall.use_proxy }}
   image_proxy: '{{ .Values.global.imageRegistry }}/hub.docker.com/'
   {{- end }}
-  {{- if and (hasKey .Values.global.gitcall.config "usercode") (hasKey .Values.global.gitcall.config.usercode "spec") }}
+  {{- if and (hasKey .Values.global.gitcall "config") (hasKey .Values.global.gitcall.config "usercode") (hasKey .Values.global.gitcall.config.usercode "spec") }}
   spec:
     {{- with .Values.global.gitcall.config.usercode.spec }}
     {{- toYaml . | nindent 6 }}

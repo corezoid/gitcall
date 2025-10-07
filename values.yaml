@@ -25,13 +25,15 @@ global:
     # Note: If using with middleware observability platform, annotation should be provided to place dashboards in proper folder.
     # From observability chart, value from grafana.sidecar.dashboards.folderAnnotation is a
     # "key" for annotation, and value is a name of folder which will be created in Grafana UI for Gitcall dashboards.
-    annotations: { }
+    annotations:
+      grafana_folder: 'GitCall'
     # -- Labels to add to the Grafana dashboard ConfigMap
     # Note: If using with middleware observability platform, labels should be provided to discovery
     # dashboards and upload them to grafana. From observability chart, value from grafana.sidecar.dashboards.label is a key,
     # and grafana.sidecar.dashboards.labelValue is a value for that label.
     # So, label should looks like grafana.sidecar.dashboards.label:grafana.sidecar.dashboards.labelValue
-    labels: { }
+    labels:
+      grafana_dashboard: 'true'
   deploymentStrategy:
     type: RollingUpdate
   networkPolicy:
@@ -42,7 +44,6 @@ global:
     annotations:
       ingress.class: internal-nginx
   db:
-    image: "postgres:16-alpine"
     # if internal true - create and use internal postgres container
     # if internal false - enable external db, like aws rds
     internal: false
@@ -96,8 +97,14 @@ global:
     enabled: true
     log_level: info
     prometheusPort: 8060
+    use_proxy: true
     # tag: ""
     resources: {}
+    # Configure proxy settings for Docker containers
+    # podGlobalProxy:
+    #   https: "http://proxy.example.com:8080"
+    #   http: "http://proxy.example.com:8080"
+    #   noproxy: "localhost,127.0.0.1,.svc,.cluster.local"
     autoscaling:
       enabled: false
       minReplicas: 1
@@ -125,7 +132,11 @@ global:
         #   rootDirectory: ""
         #   accessKey: ChangeMe
         #   secretKey: ChangeMe
-    secret: "sEcRet"
+    secret:
+      username: ""
+      password: ""
+      postgres:
+        annotations: {}
     mq_vhost: "/gitcall"
     dunder_mq_vhost: "/dundergitcall"
     db_name: "gitcall"
@@ -170,6 +181,7 @@ global:
   valkey:
     use: true
     internal: true
+    image: docker.io/valkey/valkey:8-alpine
     secret:
       name: "valkey"
       create: true
