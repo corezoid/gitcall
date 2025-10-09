@@ -44,13 +44,11 @@ global:
     annotations:
       ingress.class: internal-nginx
   db:
-    # if internal true - create and use internal postgres container
-    # if internal false - enable external db, like aws rds
     internal: false
-    ## secret configuration for postgresql
-
+    image: "hub.corezoid.com/public/postgres-postgis:15-alpine3.21-1"
     ## pvc name
     persistantVolumeClaimName: "postgresql-pvc" # If internal: true, then uncomment this line
+    ## secret configuration for postgresql
     secret:
       ## true - secret will be created automaticaly with provided values
       ## false - secret should be created manualy
@@ -73,8 +71,6 @@ global:
   #######  RabbitMQ  ########
   ## Supported version  3.9.*
   mq:
-    # if internal true - create and use internal rmq container
-    # if internal false - enable external rmq (on aws ec2 instances as example)
     internal: false
     ## secret configuration for rabbitmq
     secret:
